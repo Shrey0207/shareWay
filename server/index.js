@@ -4,6 +4,9 @@ import dotenv from "dotenv";
 import cors from "cors";
 // Load environment variables from .env file
 dotenv.config();
+
+//db connection
+import "./db/conn.js";
 const port = process.env.PORT;
 app.use(cors());
 app.use(express.json());
