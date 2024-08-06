@@ -1,50 +1,97 @@
 import {
   ChakraProvider,
-  Flex,
-  Stack,
   theme,
-  useColorModeValue,
-  Heading,
-  Text,
+  Flex,
   Box,
-  Button,
   FormControl,
   FormLabel,
   Input,
+  Stack,
+  Button,
+  Heading,
+  Text,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { Select as ChakraSelect } from '@chakra-ui/react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import FadeInUp from '../../components/Animation/FadeInUP';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 export default function Signup() {
+  const navigate = useNavigate();
+  const [token, setToken] = useState('');
+
+  useEffect(() => {
+    localStorage.setItem('tokenID', token);
+  }, [token]);
+
   const [msg, setmsg] = useState('Please fill in the following details');
   const [AID, setAID] = useState();
-  const [name, setName] = useState('');
-  const [lname, setLName] = useState('');
-  const [phone, setContact] = useState();
-  const [userType, setType] = useState('STUDENT');
-  const [designation, setDesig] = useState('Student');
   const [password, setPassword] = useState('');
   const [cpassword, setCpassword] = useState('');
+  const [phone, setContact] = useState();
+  const [email, setEmail] = useState('');
+  const [userType, setType] = useState('STUDENT');
+  const [designation, setDesig] = useState('Student');
+  const [name, setName] = useState('');
+  const [lname, setLName] = useState('');
   const [stat, setStat] = useState('Register User');
 
-  ///event handler functions
+  const handleAIDChange = e => setAID(e.target.value);
   const handlepasswordChange = e => setPassword(e.target.value);
   const handleCpasswordChange = e => setCpassword(e.target.value);
-  const handleNameChange = e => setName(e.target.value);
-  const handleLNameChange = e => setLName(e.target.value);
-  const handleAIDChange = e => setAID(e.target.value);
   const handleContactChange = e => setContact(e.target.value);
+  const handleEmailChange = e => setEmail(e.target.value);
   const handleDesigChange = e => {
-    const selectedValue = e.target.value;
-    setDesig(selectedValue);
-
-    if (selectedValue === 'Student') {
+    setDesig(e.target.value);
+    if (e.target.value === 'Student') {
       setType('STUDENT');
-    } else if (selectedValue === 'Teacher') {
-      setType('TEACHER');
     } else {
       setType('EMPLOYEE');
+    }
+  };
+  const handleNameChange = e => setName(e.target.value);
+  const handleLNameChange = e => setLName(e.target.value);
+
+  const handleSubmit = async event => {
+    event.preventDefault();
+    console.log(AID);
+    console.log(password);
+
+    try {
+      let dat = await axios.post(`${API_URL}/user/register`, {
+        UID: AID,
+        user_type: userType,
+        fname: name,
+        lname: lname,
+        email,
+        designation,
+        phone,
+        password,
+      });
+
+      if (dat.status === 201) {
+        console.log(dat);
+        setmsg('Successful Registration');
+        setStat('Registered');
+        setTimeout(() => {
+          setStat('Register User');
+        }, 2000);
+        navigate('/user/login');
+      } else {
+        setStat('Registration Failed');
+        setmsg('Registration Failed');
+        setTimeout(() => {
+          setStat('Register User');
+        }, 2000);
+      }
+      console.log('status for admin : ' + dat.status);
+    } catch (error) {
+      setmsg('Registration Failed');
+      console.log(error);
     }
   };
 
@@ -52,8 +99,8 @@ export default function Signup() {
     <ChakraProvider theme={theme}>
       <FadeInUp>
         <Flex
-          min={'100vh'}
-          align={'enter'}
+          minH={'100vh'}
+          align={'center'}
           justify={'center'}
           bg={useColorModeValue('gray.100', 'gray.800')}
         >
@@ -72,7 +119,7 @@ export default function Signup() {
               p={5}
             >
               <Stack spacing={4}>
-                <form>
+                <form onSubmit={handleSubmit}>
                   <FormControl id="Name">
                     <FormLabel>First Name</FormLabel>
                     <Input
@@ -86,7 +133,7 @@ export default function Signup() {
                   <FormControl id="LName">
                     <FormLabel>Last Name</FormLabel>
                     <Input
-                      placeholder={'Last Name'}
+                      placeholder={'Last name'}
                       type="text"
                       id="LName"
                       value={lname}
@@ -96,7 +143,7 @@ export default function Signup() {
                   <FormControl id="AID">
                     <FormLabel>Registration Number</FormLabel>
                     <Input
-                      placeholder={'XX15062'}
+                      placeholder={'209301XXX'}
                       type="text"
                       id="AID"
                       value={AID}
@@ -111,18 +158,25 @@ export default function Signup() {
                       id="contact"
                       value={phone}
                       onChange={handleContactChange}
-                      pattern="[0-9]{10}"
-                      maxLength={10}
                     />
                   </FormControl>
                   <FormControl id="Desig">
                     <FormLabel>Designation</FormLabel>
-
                     <ChakraSelect onChange={handleDesigChange}>
                       <option value="Student">Student</option>
                       <option value="Teacher">Teacher</option>
                       <option value="Employee">Employee</option>
                     </ChakraSelect>
+                  </FormControl>
+                  <FormControl id="email">
+                    <FormLabel>Email</FormLabel>
+                    <Input
+                      placeholder={'email@muj.manipal.edu'}
+                      type="email"
+                      id="email"
+                      value={email}
+                      onChange={handleEmailChange}
+                    />
                   </FormControl>
                   <FormControl id="password">
                     <FormLabel>Password</FormLabel>
@@ -161,6 +215,8 @@ export default function Signup() {
             </Box>
           </Stack>
         </Flex>
+        <br />
+        <br />
       </FadeInUp>
     </ChakraProvider>
   );

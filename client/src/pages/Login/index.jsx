@@ -38,8 +38,8 @@ export default function Login() {
         >
           <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
             <Stack align={'center'}>
-              <Heading fontsize={'4xl'}>Sign in to your account</Heading>
-              <Text fontsize={'lg'} color={'gray.600'}>
+              <Heading fontSize={'4xl'}>Sign in to your account</Heading>
+              <Text fontSize={'lg'} color={'gray.600'}>
                 User Login
               </Text>
               <Text>{msg}</Text>
