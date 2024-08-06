@@ -7,9 +7,14 @@ dotenv.config();
 
 //db connection
 import "./db/conn.js";
+
+//routes
+import router from "./router/routes.js";
+
 const port = process.env.PORT;
 app.use(cors());
 app.use(express.json());
+app.use(router);
 app.listen(port, () => {
   console.log(`Server running at: http://localhost:${port}/`);
 });
