@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import bcrypt from "bcrypt";
+
 dotenv.config();
 
 const SECRET_KEY = process.env.SECRET_KEY;
@@ -57,18 +59,32 @@ const userSchema = new mongoose.Schema({
   // ],
 });
 
+// Hash the password before saving
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+  next();
+});
+
 userSchema.methods.generateAuthToken = async function () {
   try {
     let token = jwt.sign({ UID: this.UID }, SECRET_KEY);
     // this.tokens = this.tokens.concat({ token: token });
     // await this.save();
-    console.log("userSchema/generateAuthToken : " + token);
+    // console.log("userSchema/generateAuthToken : " + token);
     return token;
   } catch (err) {
     {
       console.log(err);
     }
   }
+};
+
+// Method to compare passwords
+userSchema.methods.comparePassword = async function (password) {
+  return bcrypt.compare(password, this.password);
 };
 
 const User = mongoose.model("USERR", userSchema);

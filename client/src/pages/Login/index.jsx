@@ -1,32 +1,74 @@
 import {
   ChakraProvider,
   theme,
-  useColorModeValue,
   Flex,
-  Stack,
-  Heading,
-  Text,
   Box,
   FormControl,
   FormLabel,
   Input,
   Checkbox,
+  Stack,
   Link,
   Button,
+  Heading,
+  Text,
+  useColorModeValue,
 } from '@chakra-ui/react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import FadeInUp from '../../components/Animation/FadeInUP';
 
 export default function Login() {
-  //different state variables
-  const [msg, setmsg] = useState('Please fill in your credentials');
-  const [password, setpassword] = useState('');
+  const navigate = useNavigate();
   const [UID, setUID] = useState('');
+  const [password, setPassword] = useState('');
+  const [msg, setMsg] = useState('Please fill in your credentials');
+  const [token, setToken] = useState('');
   const [status, setStatus] = useState('Sign in');
 
-  //event handler function
   const handleUIDChange = e => setUID(e.target.value);
-  const handlepasswordChange = e => setpassword(e.target.value);
+  const handlePasswordChange = e => setPassword(e.target.value);
+
+  useEffect(() => {
+    localStorage.setItem('tokenID', token);
+  }, [token]);
+
+  const handleSubmit = async event => {
+    event.preventDefault();
+
+    try {
+      const apiUrl = process.env.REACT_APP_API_URL; // Access the environment variable
+      let dat = await axios.post(`${apiUrl}/user/login`, {
+        UID: UID,
+        password,
+      });
+      console.log('data : ' + dat.data);
+      console.log('----');
+      console.log(dat.data.user);
+      console.log('----');
+      setToken(dat.data.token);
+      if (dat.status === 200) {
+        setMsg('SUCCESSFUL SIGNIN!');
+        setStatus('Signin successful');
+        localStorage.setItem('UID', UID);
+        setTimeout(() => {
+          navigate('/user/dashboard');
+        }, 1000);
+      } else {
+        setStatus('Please Try Again');
+        setMsg('INCORRECT CREDENTIALS');
+      }
+    } catch (error) {
+      setStatus('Please Try Again');
+      setTimeout(() => {
+        setStatus('Sign in');
+        setMsg('Please fill in your credentials');
+      }, 3000);
+      console.log(error);
+    }
+  };
+
   return (
     <ChakraProvider theme={theme}>
       <FadeInUp>
@@ -46,12 +88,12 @@ export default function Login() {
             </Stack>
             <Box
               rounded={'lg'}
-              bg={useColorModeValue('white', 'gary.700')}
+              bg={useColorModeValue('white', 'gray.700')}
               boxShadow={'lg'}
               p={8}
             >
               <Stack spacing={4}>
-                <form>
+                <form onSubmit={handleSubmit}>
                   <FormControl id="UID">
                     <FormLabel>Registration Number</FormLabel>
                     <Input
@@ -69,7 +111,7 @@ export default function Login() {
                       type="password"
                       id="password"
                       value={password}
-                      onChange={handlepasswordChange}
+                      onChange={handlePasswordChange}
                     />
                   </FormControl>
                   <Stack spacing={10}>
@@ -78,13 +120,15 @@ export default function Login() {
                       align={'start'}
                       justify={'space-between'}
                     >
-                      <Checkbox> Remember me</Checkbox>
-                      <Link color={'orange.400'}>Forgot password</Link>
+                      <Checkbox>Remember me</Checkbox>
+                      <Link color={'orange.400'}>Forgot password?</Link>
                     </Stack>
                     <Button
                       bg={'orange.400'}
                       color={'white'}
-                      _hover={{ bg: 'orange.500' }}
+                      _hover={{
+                        bg: 'orange.500',
+                      }}
                       type="submit"
                     >
                       {status}

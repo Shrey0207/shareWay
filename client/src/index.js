@@ -4,6 +4,7 @@ import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import App from './pages/App';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
+import UserDashBoard from './pages/UserDashBoard';
 
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
@@ -16,6 +17,11 @@ const routing = (
         <Route path="/signup" component={Signup} element={<Signup />} />
 
         <Route path="/user/login" component={Login} element={<Login />} />
+        <Route
+          path="/user/dashboard"
+          component={UserDashBoard}
+          element={<UserDashBoard />}
+        />
       </Routes>
     </div>
   </Router>

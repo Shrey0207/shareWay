@@ -33,30 +33,27 @@ router.post("/user/register", async (req, res) => {
   }
 });
 router.post("/user/login", async (req, res) => {
-  console.log(req.body);
   const { UID, password } = req.body;
   console.log("UID : " + UID);
-  var token;
   try {
     const user = await User.findOne({ UID });
     if (user) {
-      if (password == user.password) {
-        console.log("Successfullsignin");
-        console.log(user);
-        JSON.stringify(user);
-        token = await user.generateAuthToken();
-        console.log("Tokenn /routes/ -> " + token);
-        console.log(user);
+      const isMatch = await user.comparePassword(password);
+      if (isMatch) {
+        console.log("Successful sign in");
+        const token = await user.generateAuthToken();
+        console.log("Token /routes/ -> " + token);
         res.status(200).send({ user, token });
       } else {
         console.log("Wrong Password");
         res.status(401).send("Wrong Password");
       }
     } else {
-      res.status(401).send("INVALID EMAIL");
+      res.status(401).send("INVALID UID");
     }
   } catch (err) {
     console.log(err);
+    res.status(500).send("Server error");
   }
 });
 export default router;
