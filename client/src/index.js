@@ -4,6 +4,7 @@ import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import App from './pages/App';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
+import PublishRide from './pages/PublishRide';
 import UserDashBoard from './pages/UserDashBoard';
 
 const container = document.getElementById('root');
@@ -21,6 +22,11 @@ const routing = (
           path="/user/dashboard"
           component={UserDashBoard}
           element={<UserDashBoard />}
+        />
+        <Route
+          path="/user/dashboard/publish"
+          component={PublishRide}
+          element={<PublishRide />}
         />
       </Routes>
     </div>

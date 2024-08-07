@@ -4,6 +4,9 @@ const router = express.Router();
 import jwt from "jsonwebtoken";
 import User from "../model/userSchema.js";
 import dotenv from "dotenv";
+import authenticate from "../middleware/Authenticate.js";
+import Ride from "../model/rideSchema.js";
+
 dotenv.config();
 
 router.get("/", (req, res) => {
@@ -56,4 +59,49 @@ router.post("/user/login", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+
+router.post("/users/:UID/rides", async (req, res) => {
+  const { UID } = req.params;
+  const { from, to, no_of_pass, doj, price } = req.body;
+  try {
+    const ride = new Ride({
+      PublisherID: UID,
+      from,
+      to,
+      no_of_pass,
+      doj,
+      price,
+    });
+    await ride.save();
+    console.log(ride);
+    res.send("RIDE PUBLISHED successfully");
+  } catch (error) {
+    console.log(error);
+  }
+});
+router.get("/rides/all", async (req, res) => {
+  try {
+    const allRides = await Ride.find();
+    res.status(200).json(allRides);
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+router.get("/user/dashboard", authenticate, function (req, res) {
+  console.log("Hello from GET / user / dashboard");
+  console.log(req.rootUser);
+  res.send(req.rootUser);
+});
+
+router.get("/user/data/:UID", async (req, res) => {
+  const UID = req.params.UID;
+  try {
+    const data = await User.findOne({ UID });
+    res.send(data);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 export default router;
