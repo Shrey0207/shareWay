@@ -6,6 +6,9 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import PublishRide from './pages/PublishRide';
 import UserDashBoard from './pages/UserDashBoard';
+import RidesSearch from './pages/RidesSearch';
+
+import Profile from './pages/Profile';
 
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
@@ -28,6 +31,13 @@ const routing = (
           component={PublishRide}
           element={<PublishRide />}
         />
+        <Route
+          path="/user/dashboard/search"
+          component={RidesSearch}
+          element={<RidesSearch />}
+        />
+
+        <Route path="/user/profile" component={Profile} element={<Profile />} />
       </Routes>
     </div>
   </Router>

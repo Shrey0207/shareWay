@@ -18,6 +18,12 @@ router.post("/user/register", async (req, res) => {
     req.body;
   console.log(req.body);
   try {
+    const existingUser = await User.findOne({ UID });
+    if (existingUser) {
+      return res
+        .status(400)
+        .send("UID already exists. Please contact the administrator.");
+    }
     const user = new User({
       UID,
       user_type,
@@ -71,7 +77,6 @@ router.post("/users/:UID/rides", async (req, res) => {
       no_of_pass,
       doj,
       price,
-      _id,
     });
     await ride.save();
     console.log(ride);
@@ -92,15 +97,6 @@ router.get("/user/:UID/rides", authenticate, async (req, res) => {
   }
 });
 
-router.get("/rides/all", async (req, res) => {
-  try {
-    const allRides = await Ride.find();
-    res.status(200).json(allRides);
-  } catch (e) {
-    console.log(e);
-  }
-});
-
 router.get("/user/dashboard", authenticate, function (req, res) {
   console.log("Hello from GET / user / dashboard");
   console.log(req.rootUser);
@@ -114,6 +110,36 @@ router.get("/user/data/:UID", async (req, res) => {
     res.send(data);
   } catch (err) {
     console.log(err);
+  }
+});
+
+router.get("/rides/all", async (req, res) => {
+  try {
+    const query = {};
+    if (req.query.from_location) query.from_location = req.query.from_location;
+    if (req.query.to_location) query.to_location = req.query.to_location;
+    if (req.query.doj) query.doj = req.query.doj;
+    if (req.query.price) query.price = req.query.price;
+
+    // Fetch rides
+    const rides = await Ride.find(query);
+
+    // Fetch publisher details for each ride
+    const ridesWithPublisherDetails = await Promise.all(
+      rides.map(async (ride) => {
+        const user = await User.findOne({ UID: ride.PublisherID });
+        return {
+          ...ride.toObject(),
+          publisher_fname: user ? user.fname : "Unknown",
+          publisher_lname: user ? user.lname : "Unknown",
+        };
+      })
+    );
+
+    res.status(200).json(ridesWithPublisherDetails);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
