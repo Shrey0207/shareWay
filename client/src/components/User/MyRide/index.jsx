@@ -17,6 +17,9 @@ export const MyRide = ({ from, to, nop, price, rideID, doj, UID }) => {
     }, 1000);
   };
 
+  // Console log to check props
+  console.log('From:', from, 'To:', to);
+
   return (
     <FadeInUp>
       <Card

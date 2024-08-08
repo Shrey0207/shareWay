@@ -41,16 +41,17 @@ const MyRides = () => {
 
         {loading === true ? <LoadingCard /> : null}
 
-        {allRides.map(res => {
+        {allRides.map((res, index) => {
           return (
             <MyRide
+              key={res.id || index}
               UID={parseInt(localStorage.getItem('UID'))}
-              from={res.from_location}
-              to={res.to_location}
+              from={res.from}
+              to={res.to}
               doj={res.doj}
               price={res.price}
               rideID={res.id}
-              nop={res.passenger_count}
+              nop={res.no_of_pass}
             />
           );
         })}
