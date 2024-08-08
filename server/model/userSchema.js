@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
   UID: {
     type: String,
     required: true,
+    unique: true,
   },
   //user_type to register type of user being a student, teacher, misc.
   user_type: {

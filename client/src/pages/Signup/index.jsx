@@ -11,6 +11,7 @@ import {
   Heading,
   Text,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react';
 import { Select as ChakraSelect } from '@chakra-ui/react';
 import axios from 'axios';
@@ -22,6 +23,7 @@ const API_URL = process.env.REACT_APP_API_URL;
 
 export default function Signup() {
   const navigate = useNavigate();
+  const toast = useToast();
   const [token, setToken] = useState('');
 
   useEffect(() => {
@@ -92,6 +94,15 @@ export default function Signup() {
     } catch (error) {
       setmsg('Registration Failed');
       console.log(error);
+      toast({
+        title: 'Registration Failed',
+        description:
+          error.response?.data ||
+          'An error occurred during registration. Please try again.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
