@@ -50,7 +50,7 @@ const MyRides = () => {
               to={res.to}
               doj={res.doj}
               price={res.price}
-              rideID={res.id}
+              rideID={res._id}
               nop={res.no_of_pass}
             />
           );

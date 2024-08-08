@@ -71,6 +71,7 @@ router.post("/users/:UID/rides", async (req, res) => {
       no_of_pass,
       doj,
       price,
+      _id,
     });
     await ride.save();
     console.log(ride);
