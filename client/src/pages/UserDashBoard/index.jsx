@@ -1,29 +1,32 @@
 import React from 'react';
 import MyRides from '../MyRides';
-import jwt from 'jwt-decode';
+import jwt_decode from 'jwt-decode';
 import { useState, useEffect } from 'react';
-
 const UserDashBoard = () => {
   const [S_UID, setUID] = useState('');
 
   useEffect(() => {
-    var x = localStorage.getItem('tokenID');
-    const user = jwt(x);
+    const x = localStorage.getItem('tokenID');
+    const user = jwt_decode(x);
     setUID(user.UID);
 
     try {
       fetch('/user/dashboard/', {
         method: 'GET',
         headers: {
-          token: x,
+          Authorization: `Bearer ${x}`,
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         credentials: 'include',
       }).then(response => {
-        response.json().then(response => {
-          setUID(response.EID);
-        });
+        if (response.status === 200) {
+          response.json().then(data => {
+            setUID(data.UID);
+          });
+        } else {
+          console.log('Unauthorized');
+        }
       });
     } catch (err) {
       console.log(err);

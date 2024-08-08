@@ -12,17 +12,24 @@ const MyRides = () => {
   const [loading, setLoad] = useState(false);
 
   useEffect(() => {
-    try {
-      setLoad(true);
-      axios.get(`${apiUrl}/user/${UID}/rides`).then(response => {
+    const fetchRides = async () => {
+      try {
+        setLoad(true);
+        const response = await axios.get(`${apiUrl}/user/${UID}/rides`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('tokenID')}`,
+          },
+        });
         setLoad(false);
         setAllRides(response.data);
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
+      } catch (err) {
+        console.log(err);
+        setLoad(false);
+      }
+    };
 
+    fetchRides();
+  }, [UID]);
   return (
     <ChakraProvider theme={theme}>
       <Navbar />
@@ -38,7 +45,6 @@ const MyRides = () => {
           return (
             <MyRide
               UID={parseInt(localStorage.getItem('UID'))}
-              key={res.id}
               from={res.from_location}
               to={res.to_location}
               doj={res.doj}

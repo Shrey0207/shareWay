@@ -79,6 +79,18 @@ router.post("/users/:UID/rides", async (req, res) => {
     console.log(error);
   }
 });
+
+router.get("/user/:UID/rides", authenticate, async (req, res) => {
+  const { UID } = req.params;
+  try {
+    const userRides = await Ride.find({ PublisherID: UID });
+    res.status(200).json(userRides);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Failed to fetch rides" });
+  }
+});
+
 router.get("/rides/all", async (req, res) => {
   try {
     const allRides = await Ride.find();
