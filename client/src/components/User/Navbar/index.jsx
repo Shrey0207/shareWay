@@ -26,8 +26,9 @@ var name = '';
 var x = localStorage.getItem('tokenID');
 if (x) {
   const user = jwt(x);
+  console.log('Decoded user token:', user);
   name = user.fname + ' ' + user.lname;
-  console.log(user);
+  console.log('User full name:', name);
 }
 
 export default function Navbar() {

@@ -18,6 +18,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import FadeInUp from '../../components/Animation/FadeInUp';
+import jwt from 'jwt-decode';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -31,7 +32,12 @@ export default function Login() {
   const handlePasswordChange = e => setPassword(e.target.value);
 
   useEffect(() => {
-    localStorage.setItem('tokenID', token);
+    if (token) {
+      const user = jwt(token); // Decode the token to get user information
+      localStorage.setItem('tokenID', token);
+      localStorage.setItem('fname', user.fname); // Store fname in localStorage
+      localStorage.setItem('lname', user.lname); // Store lname in localStorage
+    }
   }, [token]);
 
   const handleSubmit = async event => {
