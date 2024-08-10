@@ -13,11 +13,24 @@ import {
   Tbody,
   Button,
   TableContainer,
+  useToast,
 } from '@chakra-ui/react';
 import axios from 'axios';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
+  const toast = useToast();
+
+  const handleUpdateClick = () => {
+    // Show a toast notification when the button is clicked
+    toast({
+      title: 'Update not allowed.',
+      description: 'Please contact the administrator to update your data.',
+      status: 'warning',
+      duration: 5000,
+      isClosable: true,
+    });
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -92,7 +105,8 @@ const Profile = () => {
             </Tbody>
           </Table>
         </TableContainer>
-        <Button>Update Data</Button>
+        <Button onClick={handleUpdateClick}>Update Data</Button>{' '}
+        {/* Handle click event */}
       </Box>
 
       <br />
