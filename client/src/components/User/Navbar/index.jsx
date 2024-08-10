@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Flex,
@@ -20,20 +21,32 @@ import {
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon, AddIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
-import jwt from 'jwt-decode';
-
-var name = '';
-var x = localStorage.getItem('tokenID');
-if (x) {
-  const user = jwt(x);
-  console.log('Decoded user token:', user);
-  name = user.fname + ' ' + user.lname;
-  console.log('User full name:', name);
-}
+import axios from 'axios';
 
 export default function Navbar() {
+  const [name, setName] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Function to fetch user data
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem('tokenID');
+        if (token) {
+          const response = await axios.get('/user/dashboard', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const user = response.data;
+          setName(`${user.fname} ${user.lname}`);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const publishRide = () => {
     navigate('/user/dashboard/publish');
