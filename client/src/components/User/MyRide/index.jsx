@@ -4,21 +4,12 @@ import Card from '../../layouts/Card';
 import FadeInUp from '../../Animation/FadeInUp';
 import { useNavigate } from 'react-router-dom';
 
-export const MyRide = ({ from, to, nop, price, rideID, doj, UID }) => {
-  var color = 'white';
-  var statusColor = 'orange.200';
-
+export const MyRide = ({ from, to, nop, price, rideID, doj }) => {
   const navigate = useNavigate();
 
-  const redirectReq = async () => {
-    console.log(rideID);
-    setTimeout(() => {
-      navigate('/user/dashboard/ridestatus/' + rideID);
-    }, 1000);
+  const redirectReq = () => {
+    navigate('/user/dashboard/ridestatus/' + rideID);
   };
-
-  // Console log to check props
-  console.log('From:', from, 'To:', to);
 
   return (
     <FadeInUp>
@@ -27,59 +18,69 @@ export const MyRide = ({ from, to, nop, price, rideID, doj, UID }) => {
         my="2rem"
         px="2rem"
         mx={['1rem', '2rem', '3rem', '4rem']}
-        width="80vw"
+        width={['90vw', '80vw', '70vw']}
         borderRadius="16px"
-        boxShadow=" 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"
-        height={{ xs: '400px', sm: '300px', md: '150px', lg: '150px' }}
-        bg={color}
+        boxShadow="0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"
+        bg="white"
         position="relative"
       >
-        <SimpleGrid columns={[1, 2, 3, 4, 5, 6]} spacing="40px">
+        <SimpleGrid columns={[1, 2, 3]} spacing="20px">
           <Box
-            w="100%"
-            bgColor={statusColor}
-            textAlign={'center'}
-            verticalAlign={'middle'}
-            h={'60px'}
-            borderRadius={'50px'}
+            bgColor="orange.200"
+            textAlign="center"
+            h="60px"
+            borderRadius="50px"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
           >
-            <Text fontWeight={600} fontSize={['2xl', '3xl', '4xl']}>
+            <Text fontWeight={600} fontSize={['xl', '2xl', '3xl']}>
               {from}
             </Text>
           </Box>
           <Box
-            w="100%"
-            bgColor={statusColor}
-            textAlign={'center'}
-            verticalAlign={'middle'}
-            h={'60px'}
-            borderRadius={'50px'}
+            bgColor="orange.200"
+            textAlign="center"
+            h="60px"
+            borderRadius="50px"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
           >
-            <Text fontWeight={600} fontSize={['2xl', '3xl', '4xl']}>
+            <Text fontWeight={600} fontSize={['xl', '2xl', '3xl']}>
               {to}
             </Text>
           </Box>
-          <Box align="center">
-            <Text fontWeight={'bold'}>Date of Journey:</Text>
-            {doj}
+
+          <Box textAlign="center">
+            <Text fontWeight="bold" fontSize={['md', 'lg', 'xl']}>
+              Date of Journey:
+            </Text>
+            <Text fontSize={['md', 'lg', 'xl']}>{doj}</Text>
           </Box>
-          <Box align="center">
-            <Text fontSize={'xl'} fontWeight={'bold'}>
+          <Box textAlign="center">
+            <Text fontSize={['md', 'lg', 'xl']} fontWeight="bold">
               {nop}
             </Text>
-            <Text>Seats</Text>
+            <Text fontSize={['sm', 'md', 'lg']}>Seats</Text>
           </Box>
-          <Box align="center">
-            <b>Price</b>
-            <br />
-            Rs. {price}
+          <Box textAlign="center">
+            <Text fontSize={['md', 'lg', 'xl']} fontWeight="bold">
+              Price
+            </Text>
+            <Text fontSize={['md', 'lg', 'xl']}>Rs. {price}</Text>
           </Box>
-          <Box align="center">
-            <Button onClick={redirectReq}>Details</Button>
+          <Box textAlign="center">
+            <Button
+              onClick={redirectReq}
+              colorScheme="teal"
+              size="lg"
+              fontSize={['md', 'lg', 'xl']}
+            >
+              View Details
+            </Button>
           </Box>
         </SimpleGrid>
-        <br />
-        <br />
       </Card>
     </FadeInUp>
   );
