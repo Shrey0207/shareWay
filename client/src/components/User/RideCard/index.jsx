@@ -1,26 +1,40 @@
 import React from 'react';
-import Card from '../../layouts/Card';
-import { Text, Button } from '@chakra-ui/react';
-import { SimpleGrid, Box } from '@chakra-ui/react';
+import { useToast, Box, Text, Button, SimpleGrid } from '@chakra-ui/react';
 import FadeInUp from '../../Animation/FadeInUp';
 import axios from 'axios';
 import { useState } from 'react';
+import Card from '../../layouts/Card';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const RideCard = props => {
   const { from, to, doj, price, nop, rideID, pid, uid, publisher } = props;
   const [msg, setMsg] = useState('Request Ride');
+  const toast = useToast();
 
   const requestRide = async () => {
     try {
-      await axios.post(`${apiUrl}/users/${uid}/requests`, {
+      const response = await axios.post(`${apiUrl}/users/${uid}/requests`, {
         publisher_id: pid,
         ride_id: rideID,
       });
+
       setMsg('Ride Requested');
+      toast({
+        title: 'Success',
+        description: response.data.message,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
     } catch (err) {
-      alert(`Error: ${err}`);
+      toast({
+        title: 'Error',
+        description: err.response?.data?.message || 'Something went wrong',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 

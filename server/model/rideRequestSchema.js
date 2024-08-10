@@ -1,19 +1,14 @@
 import mongoose from "mongoose";
+
 const rideRequestSchema = new mongoose.Schema({
-  RideID: {
-    type: String,
+  requestee_id: { type: String, required: true }, // UID of the user requesting the ride
+  ride_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Ride",
     required: true,
-  },
-  RequestID: {
-    type: String,
-    required: true,
-  },
-  RequestName: {
-    type: String,
-    required: true,
-  },
+  }, // ID of the ride
+  publisher_id: { type: String, required: true }, // UID of the ride publisher
 });
 
-const RideRequest = mongoose.model("RIDEREQUEST", rideRequestSchema);
-
+const RideRequest = mongoose.model("RideRequest", rideRequestSchema);
 export default RideRequest;

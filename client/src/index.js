@@ -7,7 +7,7 @@ import Login from './pages/Login';
 import PublishRide from './pages/PublishRide';
 import UserDashBoard from './pages/UserDashBoard';
 import RidesSearch from './pages/RidesSearch';
-
+import MyRequests from './pages/MyRequests';
 import Profile from './pages/Profile';
 
 const container = document.getElementById('root');
@@ -36,7 +36,11 @@ const routing = (
           component={RidesSearch}
           element={<RidesSearch />}
         />
-
+        <Route
+          path="/user/dashboard/myrequests"
+          component={MyRequests}
+          element={<MyRequests />}
+        />
         <Route path="/user/profile" component={Profile} element={<Profile />} />
       </Routes>
     </div>

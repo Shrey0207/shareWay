@@ -6,6 +6,7 @@ import User from "../model/userSchema.js";
 import dotenv from "dotenv";
 import authenticate from "../middleware/Authenticate.js";
 import Ride from "../model/rideSchema.js";
+import RideRequest from "../model/rideRequestSchema.js";
 
 dotenv.config();
 
@@ -140,6 +141,44 @@ router.get("/rides/all", async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// Request to be added to a ride by another user
+router.post("/users/:uid/requests", async (req, res) => {
+  try {
+    const { publisher_id, ride_id } = req.body;
+    const { uid } = req.params;
+
+    // Check if the ride exists and fetch the number of available seats
+    const ride = await Ride.findById(ride_id);
+    if (!ride) {
+      return res.status(404).json({ message: "Ride not found" });
+    }
+    if (ride.seatsAvailable <= 0) {
+      return res.status(400).json({ message: "Seats not available" });
+    }
+
+    // Check if the requestee has already requested this ride
+    const existingRequest = await RideRequest.findOne({
+      requestee_id: uid,
+      ride_id,
+    });
+    if (existingRequest) {
+      return res.status(400).json({ message: "Ride already requested" });
+    }
+
+    // Create a new ride request
+    const newRequest = new RideRequest({
+      requestee_id: uid,
+      ride_id,
+      publisher_id,
+    });
+    await newRequest.save();
+
+    res.status(200).json({ message: "Ride requested successfully" });
+  } catch (err) {
+    res.status(500).json({ message: `Server error: ${err.message}` });
   }
 });
 
