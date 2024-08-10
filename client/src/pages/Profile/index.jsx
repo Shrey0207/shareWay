@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../../components/User/Navbar';
 import {
   Text,
@@ -14,18 +14,38 @@ import {
   Button,
   TableContainer,
 } from '@chakra-ui/react';
-import jwt from 'jwt-decode';
+import axios from 'axios';
 
 const Profile = () => {
-  var x = localStorage.getItem('tokenID');
-  const user = jwt(x);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get('/user/dashboard', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('tokenID')}`,
+          },
+        });
+        setUser(response.data);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  if (!user) {
+    return <Text>Loading...</Text>;
+  }
 
   return (
     <ChakraProvider theme={theme}>
       <Navbar />
 
       <Text fontWeight={'bold'} fontSize="38px" my="4rem" mx="5rem">
-        Welcome {user.fname} {user.lname} !
+        Welcome {user.fname} {user.lname}!
       </Text>
       <Box
         align="center"
@@ -50,6 +70,10 @@ const Profile = () => {
                 <Td>{user.lname}</Td>
               </Tr>
               <Tr>
+                <Td>Registration No.</Td>
+                <Td>{user.UID}</Td>
+              </Tr>
+              <Tr>
                 <Td>Email</Td>
                 <Td>{user.email}</Td>
               </Tr>
@@ -61,7 +85,6 @@ const Profile = () => {
                 <Td>User Type</Td>
                 <Td>{user.user_type}</Td>
               </Tr>
-
               <Tr>
                 <Td>Designation</Td>
                 <Td>{user.designation}</Td>
