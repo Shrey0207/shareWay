@@ -27,27 +27,27 @@ const RideCard = props => {
   return (
     <FadeInUp>
       <Card
-        py="3rem"
-        my="2rem"
+        py="2rem"
+        my="1.5rem"
         px="2rem"
         bg={'white'}
         position="relative"
-        mx={['1rem', '2rem', '3rem', '4rem']}
-        width="80vw"
-        borderRadius="16px"
-        boxShadow="0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"
-        height={{ xs: '400px', sm: '300px', md: '150px', lg: '150px' }}
+        mx={['1rem', '1.5rem', '2rem', '3rem']}
+        width="100%"
+        maxW="800px"
+        borderRadius="12px"
+        boxShadow="0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1)"
       >
-        <SimpleGrid columns={[1, 3, 4, 5, 6, 7]} spacing="40px">
+        <SimpleGrid columns={[1, 2, 3, 4]} spacing="20px">
           <Box
             w="100%"
             bgColor={'orange.200'}
             textAlign={'center'}
-            verticalAlign={'middle'}
-            h={'60px'}
-            borderRadius={'50px'}
+            borderRadius={'12px'}
+            py="2"
+            px="4"
           >
-            <Text fontWeight={600} fontSize={'3xl'}>
+            <Text fontWeight={600} fontSize={'lg'}>
               {from}
             </Text>
           </Box>
@@ -55,35 +55,37 @@ const RideCard = props => {
             w="100%"
             bgColor={'orange.200'}
             textAlign={'center'}
-            verticalAlign={'middle'}
-            h={'60px'}
-            borderRadius={'50px'}
+            borderRadius={'12px'}
+            py="2"
+            px="4"
           >
-            <Text fontWeight={600} fontSize={'3xl'}>
+            <Text fontWeight={600} fontSize={'lg'}>
               {to}
             </Text>
           </Box>
 
           <Box w="100%" textAlign={'center'}>
-            <Text fontWeight={'bold'}>Date of Journey:</Text>
-            {doj}
+            <Text fontWeight={'medium'}>Date of Journey</Text>
+            <Text fontSize={'md'}>{doj}</Text>
           </Box>
           <Box w="100%" textAlign={'center'}>
-            <Text fontSize={'3xl'}>{nop} Seats</Text>
+            <Text fontWeight={'medium'}>Seats Available</Text>
+            <Text fontSize={'md'}>{nop}</Text>
           </Box>
           <Box w="100%" textAlign={'center'}>
-            <b>Price</b>
-            <br />
-            Rs. {price}
+            <Text fontWeight={'medium'}>Price</Text>
+            <Text fontSize={'md'}>Rs. {price}</Text>
           </Box>
           <Box w="100%" textAlign={'center'}>
-            <Text fontSize={'lg'}>
-              <b>Ride by</b> <br />
+            <Text fontWeight={'medium'}>Ride by</Text>
+            <Text fontSize={'md'}>
               {publisher ? `${publisher.fname} ${publisher.lname}` : 'Unknown'}
             </Text>
           </Box>
           <Box w="100%" textAlign={'center'}>
-            <Button onClick={requestRide}>{msg}</Button>
+            <Button onClick={requestRide} colorScheme="teal" size="sm">
+              {msg}
+            </Button>
           </Box>
         </SimpleGrid>
       </Card>
