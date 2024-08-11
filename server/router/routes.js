@@ -182,4 +182,6 @@ router.post("/users/:uid/requests", async (req, res) => {
   }
 });
 
+//Need to make a route to get details of the added ride
+
 export default router;
