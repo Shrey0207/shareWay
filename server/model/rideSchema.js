@@ -26,6 +26,6 @@ const rideSchema = new mongoose.Schema({
   },
 });
 
-const Ride = mongoose.model("RIDE", rideSchema);
+const Ride = mongoose.model("Ride", rideSchema);
 
 export default Ride;

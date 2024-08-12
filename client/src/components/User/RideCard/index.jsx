@@ -1,16 +1,49 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast, Box, Text, Button, SimpleGrid } from '@chakra-ui/react';
-import FadeInUp from '../../Animation/FadeInUp';
 import axios from 'axios';
-import { useState } from 'react';
+import FadeInUp from '../../Animation/FadeInUp';
 import Card from '../../layouts/Card';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
-const RideCard = props => {
-  const { from, to, doj, price, nop, rideID, pid, uid, publisher } = props;
+const RideCard = ({
+  from,
+  to,
+  doj,
+  price,
+  nop,
+  rideID,
+  pid,
+  uid,
+  publisher,
+}) => {
   const [msg, setMsg] = useState('Request Ride');
   const toast = useToast();
+
+  useEffect(() => {
+    const checkRequestStatus = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/users/${uid}/requests`);
+        console.log('Response data:', response.data);
+        const requests = response.data;
+        const existingRequest = requests.find(
+          request => request.ride_id._id === rideID
+        );
+
+        if (existingRequest) {
+          setMsg(
+            existingRequest.status === 'pending'
+              ? 'Ride Requested'
+              : 'Requested'
+          );
+        }
+      } catch (err) {
+        console.error('Error fetching request status:', err);
+      }
+    };
+
+    checkRequestStatus();
+  }, [rideID, uid]);
 
   const requestRide = async () => {
     try {
@@ -77,7 +110,6 @@ const RideCard = props => {
               {to}
             </Text>
           </Box>
-
           <Box w="100%" textAlign={'center'}>
             <Text fontWeight={'medium'}>Date of Journey</Text>
             <Text fontSize={'md'}>{doj}</Text>
