@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
-
 dotenv.config();
 
 const SECRET_KEY = process.env.SECRET_KEY;
@@ -50,6 +49,10 @@ const userSchema = new mongoose.Schema({
     required: false,
   },
 
+  postedRides: [{ type: mongoose.Schema.Types.ObjectId, ref: "Ride" }],
+  requestedRides: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "RideRequest" },
+  ],
   // tokens: [
   //   {
   //     token: {

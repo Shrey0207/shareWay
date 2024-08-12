@@ -71,6 +71,11 @@ router.post("/users/:UID/rides", async (req, res) => {
   const { UID } = req.params;
   const { from, to, no_of_pass, doj, price } = req.body;
   try {
+    const user = await User.findOne({ UID: UID });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     const ride = new Ride({
       PublisherID: UID,
       from,
@@ -80,7 +85,11 @@ router.post("/users/:UID/rides", async (req, res) => {
       price,
     });
     await ride.save();
+    // Add the ride to the user's postedRides array
+    user.postedRides.push(ride._id);
+    await user.save();
     console.log(ride);
+
     res.send("RIDE PUBLISHED successfully");
   } catch (error) {
     console.log(error);
@@ -150,6 +159,15 @@ router.post("/users/:uid/requests", async (req, res) => {
     const { publisher_id, ride_id } = req.body;
     const { uid } = req.params;
 
+    // Debug: Log the UID to ensure it's being received correctly
+    // console.log("UID from params:", uid);
+
+    // Query the user by the correct field name
+    const user = await User.findOne({ UID: uid }); // Adjust field name based on your schema
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     // Check if the ride exists and fetch the number of available seats
     const ride = await Ride.findById(ride_id);
     if (!ride) {
@@ -175,6 +193,10 @@ router.post("/users/:uid/requests", async (req, res) => {
       publisher_id,
     });
     await newRequest.save();
+
+    // Add the request to the user's requestedRides array
+    user.requestedRides.push(newRequest._id);
+    await user.save();
 
     res.status(200).json({ message: "Ride requested successfully" });
   } catch (err) {
