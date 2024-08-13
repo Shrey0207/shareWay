@@ -242,4 +242,65 @@ router.get("/users/:uid/requests", async (req, res) => {
   }
 });
 
+router.get("/users/:uid/requeststatus", async (req, res) => {
+  try {
+    const { uid } = req.params;
+
+    // Step 1: Find the user by UID
+    const user = await User.findOne({ UID: uid }).populate("requestedRides");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Step 2: Find all ride requests of the user
+    const rideRequests = await RideRequest.find({
+      _id: { $in: user.requestedRides },
+    }).populate("ride_id"); // Populate ride_id to get ride details
+
+    // Step 3: Prepare a list to store detailed information
+    const detailedRequests = [];
+
+    for (const rideRequest of rideRequests) {
+      // Get ride details
+      const ride = await Ride.findById(rideRequest.ride_id);
+
+      if (!ride) {
+        console.log(`Ride not found for request ${rideRequest._id}`);
+        continue;
+      }
+
+      // Get publisher details
+      const publisher = await User.findOne({ UID: ride.PublisherID });
+
+      if (!publisher) {
+        console.log(`Publisher not found for ride ${ride._id}`);
+        continue;
+      }
+
+      // Prepare the detailed information
+      const requestDetail = {
+        requestID: rideRequest._id,
+        rideID: ride._id,
+        from: ride.from,
+        to: ride.to,
+        seatsAvailable: ride.no_of_pass,
+        price: ride.price,
+        requestStatus: rideRequest.status,
+        publisherName: `${publisher.fname} ${publisher.lname}`,
+      };
+
+      detailedRequests.push(requestDetail);
+    }
+
+    // Log detailed requests to the console
+    console.log("Detailed Requests:", detailedRequests);
+
+    // Send the detailed requests as a response
+    res.status(200).json(detailedRequests);
+  } catch (err) {
+    console.error("Server error:", err.message);
+    res.status(500).json({ message: `Server error: ${err.message}` });
+  }
+});
+
 export default router;
