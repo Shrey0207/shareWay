@@ -2,7 +2,7 @@ import React from 'react';
 import MyRides from '../MyRides';
 import jwt_decode from 'jwt-decode';
 import { useState, useEffect } from 'react';
-const UserDashBoard = () => {
+const UserRides = () => {
   const [S_UID, setUID] = useState('');
 
   useEffect(() => {
@@ -38,4 +38,4 @@ const UserDashBoard = () => {
     </div>
   );
 };
-export default UserDashBoard;
+export default UserRides;

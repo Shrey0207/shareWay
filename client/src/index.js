@@ -5,10 +5,10 @@ import App from './pages/App';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import PublishRide from './pages/PublishRide';
-import UserDashBoard from './pages/UserDashBoard';
 import RidesSearch from './pages/RidesSearch';
 import MyRequests from './pages/MyRequests';
 import Profile from './pages/Profile';
+import UserRides from './pages/UserRides';
 
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
@@ -22,9 +22,9 @@ const routing = (
 
         <Route path="/user/login" component={Login} element={<Login />} />
         <Route
-          path="/user/dashboard"
-          component={UserDashBoard}
-          element={<UserDashBoard />}
+          path="/user/UserRides"
+          component={UserRides}
+          element={<UserRides />}
         />
         <Route
           path="/user/dashboard/publish"

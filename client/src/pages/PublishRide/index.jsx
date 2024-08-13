@@ -67,7 +67,7 @@ export default function PublishRide() {
   }, []);
 
   const navigato_UDB = async event => {
-    navigate('/user/dashboard');
+    navigate('/user/UserRides');
   };
   const handleSubmit = async event => {
     event.preventDefault();

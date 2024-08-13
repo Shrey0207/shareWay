@@ -59,7 +59,7 @@ export default function Login() {
         setStatus('Signin successful');
         localStorage.setItem('UID', UID);
         setTimeout(() => {
-          navigate('/user/dashboard');
+          navigate('/user/UserRides');
         }, 1000);
       } else {
         setStatus('Please Try Again');

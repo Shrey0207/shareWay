@@ -106,24 +106,28 @@ router.get("/user/:UID/rides", authenticate, async (req, res) => {
     res.status(500).json({ error: "Failed to fetch rides" });
   }
 });
-
 router.get("/user/dashboard", authenticate, function (req, res) {
-  console.log("Hello from GET /user/dashboard");
+  try {
+    console.log("Hello from GET /user/dashboard");
 
-  // Extract only the necessary information you want to send
-  const userInfo = {
-    UID: req.rootUser.UID,
-    fname: req.rootUser.fname.trim(),
-    lname: req.rootUser.lname.trim(),
-    email: req.rootUser.email,
-    phone: req.rootUser.phone,
-    user_type: req.rootUser.user_type,
-    postedRides: req.rootUser.postedRides,
-    requestedRides: req.rootUser.requestedRides,
-  };
+    // Extract only the necessary information you want to send
+    const userInfo = {
+      UID: req.rootUser.UID,
+      fname: req.rootUser.fname.trim(),
+      lname: req.rootUser.lname.trim(),
+      email: req.rootUser.email,
+      phone: req.rootUser.phone,
+      user_type: req.rootUser.user_type,
+      postedRides: req.rootUser.postedRides,
+      requestedRides: req.rootUser.requestedRides,
+    };
 
-  // Send the structured response
-  res.status(200).json({ success: true, user: userInfo });
+    // Send the structured response
+    res.status(200).json({ success: true, user: userInfo });
+  } catch (error) {
+    console.error("Error fetching user dashboard data:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
 });
 
 router.get("/user/data/:UID", async (req, res) => {
