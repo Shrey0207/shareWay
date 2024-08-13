@@ -292,6 +292,8 @@ router.get("/users/:uid/requeststatus", async (req, res) => {
         price: ride.price,
         requestStatus: rideRequest.status,
         publisherName: `${publisher.fname} ${publisher.lname}`,
+        publisherEmail: publisher.email, // Add email
+        publisherPhone: publisher.phone, // Add phone
       };
 
       detailedRequests.push(requestDetail);

@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Text, SimpleGrid, Badge } from '@chakra-ui/react';
-import { CheckCircleIcon, WarningIcon, CloseIcon } from '@chakra-ui/icons';
+import { Box, Text, SimpleGrid, Badge, IconButton } from '@chakra-ui/react';
+import {
+  CheckCircleIcon,
+  WarningIcon,
+  CloseIcon,
+  EmailIcon,
+  PhoneIcon,
+} from '@chakra-ui/icons';
 import FadeInUp from '../../Animation/FadeInUp';
 import Card from '../../layouts/Card';
 import axios from 'axios';
@@ -41,12 +47,12 @@ const RequestCard = ({
   to,
   doj,
   price,
-  nop,
   rideID,
-  pid,
   uid,
   publisher,
-  status, // Adding status as a prop
+  status, // Status prop
+  email, // Publisher's email
+  phone, // Publisher's phone
 }) => {
   const [requestStatus, setRequestStatus] = useState(status || 'Unknown');
 
@@ -116,10 +122,6 @@ const RequestCard = ({
             <Text fontSize={'md'}>{doj}</Text>
           </Box>
           <Box w="100%" textAlign={'center'}>
-            <Text fontWeight={'medium'}>Seats Available</Text>
-            <Text fontSize={'md'}>{nop}</Text>
-          </Box>
-          <Box w="100%" textAlign={'center'}>
             <Text fontWeight={'medium'}>Price</Text>
             <Text fontSize={'md'}>Rs. {price}</Text>
           </Box>
@@ -135,6 +137,26 @@ const RequestCard = ({
               {icon} {text}
             </Badge>
           </Box>
+          {requestStatus === 'approved' && (
+            <Box w="100%" textAlign={'center'}>
+              <IconButton
+                icon={<EmailIcon />}
+                colorScheme="blue"
+                variant="outline"
+                aria-label="Email Publisher"
+                onClick={() => (window.location.href = `mailto:${email}`)}
+                m="2"
+              />
+              <IconButton
+                icon={<PhoneIcon />}
+                colorScheme="green"
+                variant="outline"
+                aria-label="Call Publisher"
+                onClick={() => (window.location.href = `tel:${phone}`)}
+                m="2"
+              />
+            </Box>
+          )}
         </SimpleGrid>
       </Card>
     </FadeInUp>

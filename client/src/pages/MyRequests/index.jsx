@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/User/Navbar';
 import { Box, Text, ChakraProvider, theme } from '@chakra-ui/react';
-import RequestCard from '../../components/User/RequestCard'; // Ensure correct import path
+import RequestCard from '../../components/User/RequestCard';
 import LoadingCard from '../../components/layouts/LoadingCard';
 import axios from 'axios';
 
@@ -46,12 +46,12 @@ const MyRequestRides = () => {
               to={res.to}
               doj={res.doj}
               price={res.price}
-              nop={res.seatsAvailable}
               rideID={res.rideID}
-              pid={res.publisherID}
               uid={parseInt(localStorage.getItem('UID'))}
               status={res.requestStatus}
-              publisher={{ fname: res.publisherName, lname: '' }} // Adjust as necessary
+              publisher={{ fname: res.publisherName, lname: '' }}
+              email={res.publisherEmail} // Add publisher's email
+              phone={res.publisherPhone} // Add publisher's phone number
             />
           ))
         ) : (
