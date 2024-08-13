@@ -37,8 +37,14 @@ export default function Navbar() {
           const response = await axios.get('/user/dashboard', {
             headers: { Authorization: `Bearer ${token}` },
           });
-          const user = response.data;
-          setName(`${user.fname} ${user.lname}`);
+
+          // Check if the request was successful
+          if (response.data.success) {
+            const user = response.data.user;
+            setName(`${user.fname} ${user.lname}`);
+          } else {
+            console.error('Failed to fetch user data');
+          }
         }
       } catch (error) {
         console.error('Error fetching user data:', error);

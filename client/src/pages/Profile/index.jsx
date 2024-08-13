@@ -40,7 +40,13 @@ const Profile = () => {
             Authorization: `Bearer ${localStorage.getItem('tokenID')}`,
           },
         });
-        setUser(response.data);
+
+        // Check if the request was successful
+        if (response.data.success) {
+          setUser(response.data.user);
+        } else {
+          console.error('Failed to fetch user data');
+        }
       } catch (error) {
         console.error('Error fetching user data:', error);
       }

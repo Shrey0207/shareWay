@@ -108,9 +108,22 @@ router.get("/user/:UID/rides", authenticate, async (req, res) => {
 });
 
 router.get("/user/dashboard", authenticate, function (req, res) {
-  console.log("Hello from GET / user / dashboard");
-  console.log(req.rootUser);
-  res.send(req.rootUser);
+  console.log("Hello from GET /user/dashboard");
+
+  // Extract only the necessary information you want to send
+  const userInfo = {
+    UID: req.rootUser.UID,
+    fname: req.rootUser.fname.trim(),
+    lname: req.rootUser.lname.trim(),
+    email: req.rootUser.email,
+    phone: req.rootUser.phone,
+    user_type: req.rootUser.user_type,
+    postedRides: req.rootUser.postedRides,
+    requestedRides: req.rootUser.requestedRides,
+  };
+
+  // Send the structured response
+  res.status(200).json({ success: true, user: userInfo });
 });
 
 router.get("/user/data/:UID", async (req, res) => {
