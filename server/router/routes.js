@@ -287,6 +287,7 @@ router.get("/users/:uid/requeststatus", async (req, res) => {
         rideID: ride._id,
         from: ride.from,
         to: ride.to,
+        doj: ride.doj,
         seatsAvailable: ride.no_of_pass,
         price: ride.price,
         requestStatus: rideRequest.status,

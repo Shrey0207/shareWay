@@ -3,45 +3,30 @@ import Navbar from '../../components/User/Navbar';
 import { Box, Text, ChakraProvider, theme } from '@chakra-ui/react';
 import RequestCard from '../../components/User/RequestCard'; // Ensure correct import path
 import LoadingCard from '../../components/layouts/LoadingCard';
+import axios from 'axios';
+
+const apiUrl = process.env.REACT_APP_API_URL;
 
 const MyRequestRides = () => {
   const [myRequests, setMyRequests] = useState([]);
-  const [loading, setLoad] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoad(true);
+    const fetchRequests = async () => {
+      try {
+        const uid = localStorage.getItem('UID');
+        const response = await axios.get(
+          `${apiUrl}/users/${uid}/requeststatus`
+        );
+        setMyRequests(response.data);
+      } catch (error) {
+        console.error('Error fetching request status:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Dummy data
-    const dummyRequests = [
-      {
-        ride_id: 'ride1',
-        publisher_id: 'publisher1',
-        from: 'Location A',
-        to: 'Location B',
-        doj: '2024-08-15',
-        price: 300,
-        nop: 3,
-        status: 'pending',
-        publisherName: 'John Doe',
-      },
-      {
-        ride_id: 'ride2',
-        publisher_id: 'publisher2',
-        from: 'Location C',
-        to: 'Location D',
-        doj: '2024-08-20',
-        price: 500,
-        nop: 2,
-        status: 'approved',
-        publisherName: 'Jane Smith',
-      },
-    ];
-
-    // Simulate API call delay
-    setTimeout(() => {
-      setLoad(false);
-      setMyRequests(dummyRequests);
-    }, 1000); // 1 second delay to simulate loading
+    fetchRequests();
   }, []);
 
   return (
@@ -56,28 +41,23 @@ const MyRequestRides = () => {
         {myRequests.length > 0 ? (
           myRequests.map(res => (
             <RequestCard
-              key={res.ride_id}
+              key={res.requestID}
               from={res.from}
               to={res.to}
               doj={res.doj}
               price={res.price}
-              nop={res.nop}
-              rideID={res.ride_id}
-              pid={res.publisher_id}
+              nop={res.seatsAvailable}
+              rideID={res.rideID}
+              pid={res.publisherID}
               uid={parseInt(localStorage.getItem('UID'))}
-              status={res.status}
-              publisher={{ fname: res.publisherName, lname: '' }} // Assuming publisherName is used here
+              status={res.requestStatus}
+              publisher={{ fname: res.publisherName, lname: '' }} // Adjust as necessary
             />
           ))
         ) : (
           <p>You have not requested any rides.</p>
         )}
       </Box>
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
     </ChakraProvider>
   );
 };
