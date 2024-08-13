@@ -1,7 +1,40 @@
-import React from 'react';
-import { Box, Text, SimpleGrid } from '@chakra-ui/react';
+import React, { useState, useEffect } from 'react';
+import { Box, Text, SimpleGrid, Badge } from '@chakra-ui/react';
+import { CheckCircleIcon, WarningIcon, CloseIcon } from '@chakra-ui/icons';
 import FadeInUp from '../../Animation/FadeInUp';
 import Card from '../../layouts/Card';
+import axios from 'axios';
+
+const apiUrl = process.env.REACT_APP_API_URL;
+
+const getStatusBadge = status => {
+  switch (status) {
+    case 'pending':
+      return {
+        colorScheme: 'yellow',
+        icon: <WarningIcon />,
+        text: 'Pending',
+      };
+    case 'approved':
+      return {
+        colorScheme: 'green',
+        icon: <CheckCircleIcon />,
+        text: 'Approved',
+      };
+    case 'rejected':
+      return {
+        colorScheme: 'red',
+        icon: <CloseIcon />,
+        text: 'Rejected',
+      };
+    default:
+      return {
+        colorScheme: 'gray',
+        icon: null,
+        text: 'Unknown',
+      };
+  }
+};
 
 const RequestCard = ({
   from,
@@ -12,9 +45,33 @@ const RequestCard = ({
   rideID,
   pid,
   uid,
-  status,
-  publisherName,
+  publisher,
+  status, // Adding status as a prop
 }) => {
+  const [requestStatus, setRequestStatus] = useState(status || 'Unknown');
+
+  useEffect(() => {
+    const checkRequestStatus = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/users/${uid}/requests`);
+        const requests = response.data;
+        const existingRequest = requests.find(
+          request => request.ride_id._id === rideID
+        );
+
+        if (existingRequest) {
+          setRequestStatus(existingRequest.status);
+        }
+      } catch (err) {
+        console.error('Error fetching request status:', err);
+      }
+    };
+
+    checkRequestStatus();
+  }, [rideID, uid]);
+
+  const { colorScheme, icon, text } = getStatusBadge(requestStatus);
+
   return (
     <FadeInUp>
       <Card
@@ -68,11 +125,15 @@ const RequestCard = ({
           </Box>
           <Box w="100%" textAlign={'center'}>
             <Text fontWeight={'medium'}>Ride by</Text>
-            <Text fontSize={'md'}>{publisherName || 'Unknown'}</Text>
+            <Text fontSize={'md'}>
+              {publisher ? `${publisher.fname} ${publisher.lname}` : 'Unknown'}
+            </Text>
           </Box>
           <Box w="100%" textAlign={'center'}>
             <Text fontWeight={'medium'}>Status</Text>
-            <Text fontSize={'md'}>{status || 'Unknown'}</Text>
+            <Badge colorScheme={colorScheme} variant="solid" px={4} py={2}>
+              {icon} {text}
+            </Badge>
           </Box>
         </SimpleGrid>
       </Card>
