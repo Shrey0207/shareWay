@@ -309,5 +309,29 @@ router.get("/users/:uid/requeststatus", async (req, res) => {
     res.status(500).json({ message: `Server error: ${err.message}` });
   }
 });
+// Route to get ride details by slug (MongoDB ObjectId)
+router.get("/rides/:slug/requests", async (req, res) => {
+  try {
+    const { slug } = req.params;
 
+    // Validate the MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(slug)) {
+      return res.status(400).json({ message: "Invalid ride ID" });
+    }
+
+    // Find the ride by ObjectId
+    const ride = await Ride.findById(slug);
+
+    // If the ride is not found
+    if (!ride) {
+      return res.status(404).json({ message: "Ride not found" });
+    }
+
+    // Return the ride details
+    res.status(200).json(ride);
+  } catch (error) {
+    console.error("Error fetching ride details:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 export default router;

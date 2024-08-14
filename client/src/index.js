@@ -9,6 +9,7 @@ import RidesSearch from './pages/RidesSearch';
 import MyRequests from './pages/MyRequests';
 import Profile from './pages/Profile';
 import UserRides from './pages/UserRides';
+import RideStatus from './pages/RideStatus';
 
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
@@ -41,6 +42,13 @@ const routing = (
           component={MyRequests}
           element={<MyRequests />}
         />
+
+        <Route
+          path="/user/dashboard/ridestatus/:slug"
+          component={RideStatus}
+          element={<RideStatus />}
+        />
+
         <Route path="/user/profile" component={Profile} element={<Profile />} />
       </Routes>
     </div>
