@@ -37,36 +37,31 @@ const RideStatus = () => {
   const toast = useToast();
 
   useEffect(() => {
-    const fetchRideDetails = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/rides/${slug}/requests/`);
-        setRideDetails(response.data);
+        const [rideResponse, requestResponse] = await Promise.all([
+          axios.get(`${apiUrl}/rides/${slug}/requests/`),
+          axios.get(`${apiUrl}/rides/${slug}/requesters`),
+        ]);
+
+        setRideDetails(rideResponse.data);
+        setPendingRequests(
+          requestResponse.data.requests.filter(req => req.status === 'pending')
+        );
+        setAcceptedRequests(
+          requestResponse.data.requests.filter(req => req.status === 'approved')
+        );
+        setRejectedRequests(
+          requestResponse.data.requests.filter(req => req.status === 'rejected')
+        );
       } catch (error) {
-        console.error('Error fetching ride details:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    const fetchPendingRequests = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/rides/${slug}/requesters`);
-        setPendingRequests(
-          response.data.requests.filter(req => req.status === 'pending')
-        );
-        setAcceptedRequests(
-          response.data.requests.filter(req => req.status === 'approved')
-        );
-        setRejectedRequests(
-          response.data.requests.filter(req => req.status === 'rejected')
-        );
-      } catch (error) {
-        console.error('Error fetching pending requests:', error);
-      }
-    };
-
-    fetchRideDetails();
-    fetchPendingRequests();
+    fetchData();
   }, [slug]);
 
   const handleStatusChange = async (requestId, status) => {
@@ -74,9 +69,28 @@ const RideStatus = () => {
       await axios.put(`${apiUrl}/rides/${slug}/request/${requestId}`, {
         status,
       });
-      setPendingRequests(prevRequests =>
-        prevRequests.filter(req => req._id !== requestId)
-      );
+
+      // Update state based on the status change
+      if (status === 'approved') {
+        setPendingRequests(prevRequests =>
+          prevRequests.filter(req => req._id !== requestId)
+        );
+        setAcceptedRequests(prevAccepted =>
+          prevAccepted.concat(
+            pendingRequests.find(req => req._id === requestId)
+          )
+        );
+      } else if (status === 'rejected') {
+        setPendingRequests(prevRequests =>
+          prevRequests.filter(req => req._id !== requestId)
+        );
+        setRejectedRequests(prevRejected =>
+          prevRejected.concat(
+            pendingRequests.find(req => req._id === requestId)
+          )
+        );
+      }
+
       toast({
         title: `Request ${status === 'approved' ? 'accepted' : 'rejected'}`,
         status: status === 'approved' ? 'success' : 'error',
@@ -274,120 +288,133 @@ const RideStatus = () => {
                   </SlideFade>
                 ))
               ) : (
-                <Text>No pending requests.</Text>
+                <Text>No pending requests</Text>
               )}
             </Box>
-            {acceptedRequests.length > 0 && (
-              <Box
-                bg="white"
-                p={['1rem', '2rem']}
-                borderRadius="16px"
-                boxShadow="0 4px 12px rgba(0, 0, 0, 0.1)"
-                maxW="800px"
-                mx={['1rem', '2rem', '3rem']}
-                mt="2rem"
-                textAlign="left"
-                animation="slideInUp 0.5s ease-out"
-              >
-                <Text fontWeight={'bold'} fontSize="24px" mb="1rem">
-                  Accepted Requests
-                </Text>
-                {acceptedRequests.map((request, index) => (
-                  <SlideFade key={index} in={true} offsetY="20px">
-                    <Box
-                      p="1rem"
-                      borderBottom="1px solid #e2e8f0"
-                      mb="1rem"
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      borderRadius="8px"
-                      _hover={{ bg: 'gray.50', transform: 'scale(1.02)' }}
-                      transition="background-color 0.3s, transform 0.3s"
-                    >
-                      <Flex align="center">
-                        <Icon as={FaUser} w={5} h={5} color="teal.400" />
-                        <Box ml="3">
-                          <Text fontWeight={'medium'}>Name</Text>
-                          <Text fontSize={'lg'} fontWeight={'bold'}>
-                            {request.requesteeName}
-                          </Text>
-                          <Text fontSize="sm" color="gray.500">
-                            Registration No: {request.requestee_id}
-                          </Text>
-                        </Box>
-                      </Flex>
-                      <HStack spacing="4">
-                        <IconButton
-                          icon={<EmailIcon />}
-                          colorScheme="blue"
-                          variant="outline"
-                          aria-label="Email Requestee"
-                          onClick={() =>
-                            (window.location.href = `mailto:${request.requesteeEmail}`)
-                          }
-                        />
-                        <IconButton
-                          icon={<PhoneIcon />}
-                          colorScheme="green"
-                          variant="outline"
-                          aria-label="Call Requestee"
-                          onClick={() =>
-                            (window.location.href = `tel:${request.requesteePhone}`)
-                          }
-                        />
-                      </HStack>
-                    </Box>
-                  </SlideFade>
-                ))}
-              </Box>
-            )}
-
-            {rejectedRequests.length > 0 && (
-              <Box
-                bg="white"
-                p={['1rem', '2rem']}
-                borderRadius="16px"
-                boxShadow="0 4px 12px rgba(0, 0, 0, 0.1)"
-                maxW="800px"
-                mx={['1rem', '2rem', '3rem']}
-                mt="2rem"
-                textAlign="left"
-                animation="slideInUp 0.5s ease-out"
-              >
-                <Text fontWeight={'bold'} fontSize="24px" mb="1rem">
-                  Rejected Requests
-                </Text>
-                {rejectedRequests.map((request, index) => (
-                  <SlideFade key={index} in={true} offsetY="20px">
-                    <Box
-                      p="1rem"
-                      borderBottom="1px solid #e2e8f0"
-                      mb="1rem"
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      borderRadius="8px"
-                      _hover={{ bg: 'gray.50', transform: 'scale(1.02)' }}
-                      transition="background-color 0.3s, transform 0.3s"
-                    >
-                      <Flex align="center">
-                        <Icon as={FaUser} w={5} h={5} color="teal.400" />
-                        <Box ml="3">
-                          <Text fontWeight={'medium'}>Name</Text>
-                          <Text fontSize={'lg'} fontWeight={'bold'}>
-                            {request.requesteeName}
-                          </Text>
-                          <Text fontSize="sm" color="gray.500">
-                            Registration No: {request.requestee_id}
-                          </Text>
-                        </Box>
-                      </Flex>
-                    </Box>
-                  </SlideFade>
-                ))}
-              </Box>
-            )}
+            {/* Render accepted requests */}
+            <Box
+              bg="white"
+              p={['1rem', '2rem']}
+              borderRadius="16px"
+              boxShadow="0 4px 12px rgba(0, 0, 0, 0.1)"
+              maxW="800px"
+              mx={['1rem', '2rem', '3rem']}
+              mt="2rem"
+              textAlign="left"
+              animation="slideInUp 0.5s ease-out"
+            >
+              <Text fontWeight={'bold'} fontSize="24px" mb="1rem">
+                Accepted Requests
+              </Text>
+              {acceptedRequests.length > 0 ? (
+                acceptedRequests.map((request, index) => (
+                  <Box
+                    key={index}
+                    p="1rem"
+                    borderBottom="1px solid #e2e8f0"
+                    mb="1rem"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    borderRadius="8px"
+                    _hover={{ bg: 'gray.50', transform: 'scale(1.02)' }}
+                    transition="background-color 0.3s, transform 0.3s"
+                  >
+                    <Flex align="center">
+                      <Icon
+                        as={FaUser}
+                        w={5}
+                        h={5}
+                        color="teal.400"
+                        transition="color 0.3s ease"
+                      />
+                      <Box ml="3">
+                        <Text fontWeight={'medium'}>Name</Text>
+                        <Text fontSize={'lg'} fontWeight={'bold'}>
+                          {request.requesteeName}
+                        </Text>
+                        <Text fontSize={'sm'} color="gray.600">
+                          Registration No: {request.requestee_id}
+                        </Text>
+                      </Box>
+                    </Flex>
+                    <HStack>
+                      <IconButton
+                        icon={<PhoneIcon />}
+                        colorScheme="teal"
+                        variant="outline"
+                        aria-label="Call"
+                        as="a"
+                        href={`tel:${request.requesteePhone}`}
+                      />
+                      <IconButton
+                        icon={<EmailIcon />}
+                        colorScheme="teal"
+                        variant="outline"
+                        aria-label="Email"
+                        as="a"
+                        href={`mailto:${request.requesteeEmail}`}
+                      />
+                    </HStack>
+                  </Box>
+                ))
+              ) : (
+                <Text>No accepted requests</Text>
+              )}
+            </Box>
+            {/* Render rejected requests */}
+            <Box
+              bg="white"
+              p={['1rem', '2rem']}
+              borderRadius="16px"
+              boxShadow="0 4px 12px rgba(0, 0, 0, 0.1)"
+              maxW="800px"
+              mx={['1rem', '2rem', '3rem']}
+              mt="2rem"
+              textAlign="left"
+              animation="slideInUp 0.5s ease-out"
+            >
+              <Text fontWeight={'bold'} fontSize="24px" mb="1rem">
+                Rejected Requests
+              </Text>
+              {rejectedRequests.length > 0 ? (
+                rejectedRequests.map((request, index) => (
+                  <Box
+                    key={index}
+                    p="1rem"
+                    borderBottom="1px solid #e2e8f0"
+                    mb="1rem"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    borderRadius="8px"
+                    _hover={{ bg: 'gray.50', transform: 'scale(1.02)' }}
+                    transition="background-color 0.3s, transform 0.3s"
+                  >
+                    <Flex align="center">
+                      <Icon
+                        as={FaUser}
+                        w={5}
+                        h={5}
+                        color="teal.400"
+                        transition="color 0.3s ease"
+                      />
+                      <Box ml="3">
+                        <Text fontWeight={'medium'}>Name</Text>
+                        <Text fontSize={'lg'} fontWeight={'bold'}>
+                          {request.requesteeName}
+                        </Text>
+                        <Text fontSize={'sm'} color="gray.600">
+                          Registration No: {request.requestee_id}
+                        </Text>
+                      </Box>
+                    </Flex>
+                  </Box>
+                ))
+              ) : (
+                <Text>No rejected requests</Text>
+              )}
+            </Box>
           </>
         )}
       </Box>
