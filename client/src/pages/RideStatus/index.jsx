@@ -7,7 +7,7 @@ import {
   Icon,
   SimpleGrid,
   ChakraProvider,
-  theme,
+  Button,
 } from '@chakra-ui/react';
 import {
   FaMapMarkerAlt,
@@ -15,8 +15,6 @@ import {
   FaCalendarAlt,
   FaMoneyBillWave,
   FaUser,
-  FaEnvelope,
-  FaPhone,
 } from 'react-icons/fa';
 import Navbar from '../../components/User/Navbar'; // Adjust the import path if necessary
 import axios from 'axios';
@@ -27,7 +25,7 @@ const apiUrl = process.env.REACT_APP_API_URL;
 const RideStatus = () => {
   const { slug } = useParams();
   const [rideDetails, setRideDetails] = useState(null);
-  const [requesterDetails, setRequesterDetails] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,22 +40,39 @@ const RideStatus = () => {
       }
     };
 
-    const fetchRequesterDetails = async () => {
+    const fetchPendingRequests = async () => {
       try {
         const response = await axios.get(`${apiUrl}/rides/${slug}/requesters`);
-        console.log('Requester Details:', response.data);
-        setRequesterDetails(response.data.requests);
+        setPendingRequests(
+          response.data.requests.filter(req => req.status === 'pending')
+        );
       } catch (error) {
-        console.error('Error fetching requester details:', error);
+        console.error('Error fetching pending requests:', error);
       }
     };
 
     fetchRideDetails();
-    fetchRequesterDetails();
+    fetchPendingRequests();
   }, [slug]);
 
+  const handleStatusChange = async (requestId, status) => {
+    try {
+      await axios.put(`${apiUrl}/rides/${slug}/request/${requestId}`, {
+        status,
+      });
+      setPendingRequests(prevRequests =>
+        prevRequests.filter(req => req._id !== requestId)
+      );
+    } catch (error) {
+      console.error(
+        `Error ${status === 'approved' ? 'approving' : 'rejecting'} request:`,
+        error
+      );
+    }
+  };
+
   return (
-    <ChakraProvider theme={theme}>
+    <ChakraProvider>
       <Navbar />
       <Box align={'center'} py="2rem">
         <Text
@@ -143,17 +158,20 @@ const RideStatus = () => {
               textAlign="left"
             >
               <Text fontWeight={'bold'} fontSize="24px" mb="1rem">
-                Requester Details
+                Pending Requests
               </Text>
-              {requesterDetails.length > 0 ? (
-                requesterDetails.map((request, index) => (
+              {pendingRequests.length > 0 ? (
+                pendingRequests.map((request, index) => (
                   <Box
                     key={index}
                     p="1rem"
                     borderBottom="1px solid #e2e8f0"
                     mb="1rem"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
                   >
-                    <Flex align="center" mb="0.5rem">
+                    <Flex align="center">
                       <Icon as={FaUser} w={5} h={5} color="teal.400" />
                       <Box ml="3">
                         <Text fontWeight={'medium'}>Name</Text>
@@ -162,28 +180,29 @@ const RideStatus = () => {
                         </Text>
                       </Box>
                     </Flex>
-                    <Flex align="center" mb="0.5rem">
-                      <Icon as={FaEnvelope} w={5} h={5} color="blue.400" />
-                      <Box ml="3">
-                        <Text fontWeight={'medium'}>Email</Text>
-                        <Text fontSize={'lg'} fontWeight={'bold'}>
-                          {request.requesteeEmail}
-                        </Text>
-                      </Box>
-                    </Flex>
-                    <Flex align="center">
-                      <Icon as={FaPhone} w={5} h={5} color="green.400" />
-                      <Box ml="3">
-                        <Text fontWeight={'medium'}>Phone</Text>
-                        <Text fontSize={'lg'} fontWeight={'bold'}>
-                          {request.requesteePhone}
-                        </Text>
-                      </Box>
-                    </Flex>
+                    <Box>
+                      <Button
+                        colorScheme="teal"
+                        mr={3}
+                        onClick={() =>
+                          handleStatusChange(request._id, 'approved')
+                        }
+                      >
+                        Accept
+                      </Button>
+                      <Button
+                        colorScheme="red"
+                        onClick={() =>
+                          handleStatusChange(request._id, 'rejected')
+                        }
+                      >
+                        Reject
+                      </Button>
+                    </Box>
                   </Box>
                 ))
               ) : (
-                <Text>No requesters found.</Text>
+                <Text>No pending requests.</Text>
               )}
             </Box>
           </>

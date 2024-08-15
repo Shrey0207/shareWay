@@ -371,5 +371,36 @@ router.get("/rides/:rideId/requesters", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+// Route to update the status of a ride request
+router.put("/rides/:rideId/request/:requestId", async (req, res) => {
+  const { rideId, requestId } = req.params;
+  const { status } = req.body;
+
+  try {
+    // Validate the status
+    if (!["approved", "rejected"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    // Find the request by ID and update its status
+    const updatedRequest = await RideRequest.findByIdAndUpdate(
+      requestId,
+      { status },
+      { new: true }
+    );
+
+    // If the request is not found
+    if (!updatedRequest) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: `Request ${status} successfully`, updatedRequest });
+  } catch (error) {
+    console.error("Error updating request status:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 export default router;
