@@ -10,7 +10,10 @@ import {
   Button,
   useToast,
   SlideFade,
+  HStack,
+  IconButton,
 } from '@chakra-ui/react';
+import { EmailIcon, PhoneIcon } from '@chakra-ui/icons';
 import {
   FaMapMarkerAlt,
   FaUsers,
@@ -28,6 +31,8 @@ const RideStatus = () => {
   const { slug } = useParams();
   const [rideDetails, setRideDetails] = useState(null);
   const [pendingRequests, setPendingRequests] = useState([]);
+  const [acceptedRequests, setAcceptedRequests] = useState([]);
+  const [rejectedRequests, setRejectedRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const toast = useToast();
 
@@ -48,6 +53,12 @@ const RideStatus = () => {
         const response = await axios.get(`${apiUrl}/rides/${slug}/requesters`);
         setPendingRequests(
           response.data.requests.filter(req => req.status === 'pending')
+        );
+        setAcceptedRequests(
+          response.data.requests.filter(req => req.status === 'approved')
+        );
+        setRejectedRequests(
+          response.data.requests.filter(req => req.status === 'rejected')
         );
       } catch (error) {
         console.error('Error fetching pending requests:', error);
@@ -122,15 +133,7 @@ const RideStatus = () => {
                       h={6}
                       color="orange.400"
                       transition="color 0.3s ease"
-                    >
-                      <Box
-                        _hover={{
-                          color: 'orange.600',
-                          transform: 'scale(1.1)',
-                        }}
-                        transition="transform 0.3s ease, color 0.3s ease"
-                      />
-                    </Icon>
+                    />
                     <Box ml="3">
                       <Text fontWeight={'medium'}>From</Text>
                       <Text fontSize={'lg'} fontWeight={'bold'}>
@@ -145,15 +148,7 @@ const RideStatus = () => {
                       h={6}
                       color="orange.400"
                       transition="color 0.3s ease"
-                    >
-                      <Box
-                        _hover={{
-                          color: 'orange.600',
-                          transform: 'scale(1.1)',
-                        }}
-                        transition="transform 0.3s ease, color 0.3s ease"
-                      />
-                    </Icon>
+                    />
                     <Box ml="3">
                       <Text fontWeight={'medium'}>To</Text>
                       <Text fontSize={'lg'} fontWeight={'bold'}>
@@ -168,12 +163,7 @@ const RideStatus = () => {
                       h={6}
                       color="blue.400"
                       transition="color 0.3s ease"
-                    >
-                      <Box
-                        _hover={{ color: 'blue.600', transform: 'scale(1.1)' }}
-                        transition="transform 0.3s ease, color 0.3s ease"
-                      />
-                    </Icon>
+                    />
                     <Box ml="3">
                       <Text fontWeight={'medium'}>Date of Journey</Text>
                       <Text fontSize={'lg'} fontWeight={'bold'}>
@@ -188,12 +178,7 @@ const RideStatus = () => {
                       h={6}
                       color="teal.400"
                       transition="color 0.3s ease"
-                    >
-                      <Box
-                        _hover={{ color: 'teal.600', transform: 'scale(1.1)' }}
-                        transition="transform 0.3s ease, color 0.3s ease"
-                      />
-                    </Icon>
+                    />
                     <Box ml="3">
                       <Text fontWeight={'medium'}>Seats Available</Text>
                       <Text fontSize={'lg'} fontWeight={'bold'}>
@@ -208,12 +193,7 @@ const RideStatus = () => {
                       h={6}
                       color="green.400"
                       transition="color 0.3s ease"
-                    >
-                      <Box
-                        _hover={{ color: 'green.600', transform: 'scale(1.1)' }}
-                        transition="transform 0.3s ease, color 0.3s ease"
-                      />
-                    </Icon>
+                    />
                     <Box ml="3">
                       <Text fontWeight={'medium'}>Price</Text>
                       <Text fontSize={'lg'} fontWeight={'bold'}>
@@ -259,15 +239,7 @@ const RideStatus = () => {
                           h={5}
                           color="teal.400"
                           transition="color 0.3s ease"
-                        >
-                          <Box
-                            _hover={{
-                              color: 'teal.600',
-                              transform: 'scale(1.1)',
-                            }}
-                            transition="transform 0.3s ease, color 0.3s ease"
-                          />
-                        </Icon>
+                        />
                         <Box ml="3">
                           <Text fontWeight={'medium'}>Name</Text>
                           <Text fontSize={'lg'} fontWeight={'bold'}>
@@ -305,6 +277,117 @@ const RideStatus = () => {
                 <Text>No pending requests.</Text>
               )}
             </Box>
+            {acceptedRequests.length > 0 && (
+              <Box
+                bg="white"
+                p={['1rem', '2rem']}
+                borderRadius="16px"
+                boxShadow="0 4px 12px rgba(0, 0, 0, 0.1)"
+                maxW="800px"
+                mx={['1rem', '2rem', '3rem']}
+                mt="2rem"
+                textAlign="left"
+                animation="slideInUp 0.5s ease-out"
+              >
+                <Text fontWeight={'bold'} fontSize="24px" mb="1rem">
+                  Accepted Requests
+                </Text>
+                {acceptedRequests.map((request, index) => (
+                  <SlideFade key={index} in={true} offsetY="20px">
+                    <Box
+                      p="1rem"
+                      borderBottom="1px solid #e2e8f0"
+                      mb="1rem"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      borderRadius="8px"
+                      _hover={{ bg: 'gray.50', transform: 'scale(1.02)' }}
+                      transition="background-color 0.3s, transform 0.3s"
+                    >
+                      <Flex align="center">
+                        <Icon as={FaUser} w={5} h={5} color="teal.400" />
+                        <Box ml="3">
+                          <Text fontWeight={'medium'}>Name</Text>
+                          <Text fontSize={'lg'} fontWeight={'bold'}>
+                            {request.requesteeName}
+                          </Text>
+                          <Text fontSize="sm" color="gray.500">
+                            Registration No: {request.requestee_id}
+                          </Text>
+                        </Box>
+                      </Flex>
+                      <HStack spacing="4">
+                        <IconButton
+                          icon={<EmailIcon />}
+                          colorScheme="blue"
+                          variant="outline"
+                          aria-label="Email Requestee"
+                          onClick={() =>
+                            (window.location.href = `mailto:${request.requesteeEmail}`)
+                          }
+                        />
+                        <IconButton
+                          icon={<PhoneIcon />}
+                          colorScheme="green"
+                          variant="outline"
+                          aria-label="Call Requestee"
+                          onClick={() =>
+                            (window.location.href = `tel:${request.requesteePhone}`)
+                          }
+                        />
+                      </HStack>
+                    </Box>
+                  </SlideFade>
+                ))}
+              </Box>
+            )}
+
+            {rejectedRequests.length > 0 && (
+              <Box
+                bg="white"
+                p={['1rem', '2rem']}
+                borderRadius="16px"
+                boxShadow="0 4px 12px rgba(0, 0, 0, 0.1)"
+                maxW="800px"
+                mx={['1rem', '2rem', '3rem']}
+                mt="2rem"
+                textAlign="left"
+                animation="slideInUp 0.5s ease-out"
+              >
+                <Text fontWeight={'bold'} fontSize="24px" mb="1rem">
+                  Rejected Requests
+                </Text>
+                {rejectedRequests.map((request, index) => (
+                  <SlideFade key={index} in={true} offsetY="20px">
+                    <Box
+                      p="1rem"
+                      borderBottom="1px solid #e2e8f0"
+                      mb="1rem"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      borderRadius="8px"
+                      _hover={{ bg: 'gray.50', transform: 'scale(1.02)' }}
+                      transition="background-color 0.3s, transform 0.3s"
+                    >
+                      <Flex align="center">
+                        <Icon as={FaUser} w={5} h={5} color="teal.400" />
+                        <Box ml="3">
+                          <Text fontWeight={'medium'}>Name</Text>
+                          <Text fontSize={'lg'} fontWeight={'bold'}>
+                            {request.requesteeName}
+                          </Text>
+                          <Text fontSize="sm" color="gray.500">
+                            Registration No: {request.requestee_id}
+                          </Text>
+                        </Box>
+                      </Flex>
+                    </Box>
+                  </SlideFade>
+                ))}
+              </Box>
+            )}
           </>
         )}
       </Box>
