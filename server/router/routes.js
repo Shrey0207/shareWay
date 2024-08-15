@@ -334,4 +334,42 @@ router.get("/rides/:slug/requests", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+router.get("/rides/:rideId/requesters", async (req, res) => {
+  const { rideId } = req.params;
+
+  try {
+    // Find all ride requests with the specified ride_id
+    const rideRequests = await RideRequest.find({ ride_id: rideId });
+
+    // Log ride requests for debugging
+    console.log("Ride Requests:", rideRequests);
+
+    // If no requests found, return an empty array
+    if (rideRequests.length === 0) {
+      return res.json({ requests: [] });
+    }
+
+    // Iterate over rideRequests to fetch user details based on UID
+    const requestsWithUserDetails = await Promise.all(
+      rideRequests.map(async (request) => {
+        const user = await User.findOne({ UID: request.requestee_id });
+
+        return {
+          ...request._doc,
+          requesteeName: `${user?.fname || "N/A"} ${user?.lname || "N/A"}`,
+          requesteeEmail: user?.email || "N/A",
+          requesteePhone: user?.phone || "N/A",
+        };
+      })
+    );
+
+    // Send the combined data to the frontend
+    res.json({ requests: requestsWithUserDetails });
+  } catch (error) {
+    console.error("Error fetching ride requests:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 export default router;
