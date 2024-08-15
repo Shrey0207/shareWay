@@ -382,6 +382,12 @@ router.put("/rides/:rideId/request/:requestId", async (req, res) => {
       return res.status(400).json({ message: "Invalid status" });
     }
 
+    // Find the ride
+    const ride = await Ride.findById(rideId);
+    if (!ride) {
+      return res.status(404).json({ message: "Ride not found" });
+    }
+
     // Find the request by ID and update its status
     const updatedRequest = await RideRequest.findByIdAndUpdate(
       requestId,
@@ -392,6 +398,12 @@ router.put("/rides/:rideId/request/:requestId", async (req, res) => {
     // If the request is not found
     if (!updatedRequest) {
       return res.status(404).json({ message: "Request not found" });
+    }
+
+    // If the request is approved, decrease the number of available seats
+    if (status === "approved") {
+      ride.no_of_pass = (parseInt(ride.no_of_pass, 10) - 1).toString();
+      await ride.save();
     }
 
     res
