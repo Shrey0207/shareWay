@@ -182,7 +182,7 @@ export default function Signup() {
                   <FormControl id="email">
                     <FormLabel>Email</FormLabel>
                     <Input
-                      placeholder={'email@muj.manipal.edu'}
+                      placeholder={'email@nits.ac.in'}
                       type="email"
                       id="email"
                       value={email}
