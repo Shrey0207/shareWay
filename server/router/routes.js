@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import authenticate from "../middleware/Authenticate.js";
 import Ride from "../model/rideSchema.js";
 import RideRequest from "../model/rideRequestSchema.js";
+import moment from "moment";
 
 dotenv.config();
 
@@ -411,6 +412,46 @@ router.put("/rides/:rideId/request/:requestId", async (req, res) => {
       .json({ message: `Request ${status} successfully`, updatedRequest });
   } catch (error) {
     console.error("Error updating request status:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+router.get("/user/:uid/completedrides", async (req, res) => {
+  const { uid } = req.params;
+  const currentDate = moment().format("YYYY-MM-DD");
+
+  try {
+    // Find the user by UID
+    const user = await User.findOne({ UID: uid })
+      .populate("postedRides")
+      .populate("requestedRides");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Get old posted rides
+    const oldPostedRides = user.postedRides.filter((ride) =>
+      moment(ride.doj).isBefore(currentDate)
+    );
+
+    // Get old requested rides
+    let oldRequestedRides = [];
+    for (let request of user.requestedRides) {
+      const ride = await Ride.findById(request.ride_id);
+      if (ride && moment(ride.doj).isBefore(currentDate)) {
+        oldRequestedRides.push({
+          ...ride.toObject(),
+          status: request.status,
+        });
+      }
+    }
+
+    res.json({
+      oldPostedRides,
+      oldRequestedRides,
+    });
+  } catch (error) {
+    console.error("Error fetching completed rides:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
