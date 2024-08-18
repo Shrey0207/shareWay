@@ -53,7 +53,7 @@ const routing = (
         <Route path="/user/profile" component={Profile} element={<Profile />} />
 
         <Route
-          path="/user/"
+          path="/user/finishedrides"
           component={FinishedRides}
           element={<FinishedRides />}
         />
