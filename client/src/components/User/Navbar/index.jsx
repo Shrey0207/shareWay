@@ -60,8 +60,8 @@ export default function Navbar() {
   const myprofile = () => {
     navigate('/user/profile');
   };
-  const pymnts = () => {
-    navigate('/user/payments');
+  const frides = () => {
+    navigate('/user/finishedrides');
   };
   const logout = () => {
     localStorage.clear();
@@ -124,7 +124,7 @@ export default function Navbar() {
                   {name}
                 </Text>
                 <MenuItem onClick={myprofile}>My Profile</MenuItem>
-                <MenuItem onClick={pymnts}>Payments</MenuItem>
+                <MenuItem onClick={frides}>Finished Rides</MenuItem>
                 <MenuDivider />
                 <MenuItem onClick={logout}>Log Out</MenuItem>
               </MenuList>

@@ -22,6 +22,8 @@ const RideCard = ({
 
   useEffect(() => {
     const checkRequestStatus = async () => {
+      const uid = localStorage.getItem('UID');
+
       try {
         const response = await axios.get(`${apiUrl}/users/${uid}/requests`);
         console.log('Response data:', response.data);
