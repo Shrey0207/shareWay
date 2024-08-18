@@ -1,14 +1,21 @@
 import React from 'react';
-import { Box, Text, SimpleGrid, Badge, IconButton } from '@chakra-ui/react';
+import {
+  Box,
+  Text,
+  SimpleGrid,
+  Button,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import {
   CheckCircleIcon,
   CloseIcon,
   WarningIcon,
-  EmailIcon,
-  PhoneIcon,
+  ArrowForwardIcon,
+  ArrowBackIcon,
 } from '@chakra-ui/icons';
 import FadeInUp from '../../components/Animation/FadeInUp';
 import Card from '../../components/layouts/Card';
+import { useNavigate } from 'react-router-dom';
 
 const getStatusBadge = status => {
   switch (status) {
@@ -40,9 +47,23 @@ const getStatusBadge = status => {
 };
 
 const FinishedRideCard = ({ ride, isRequestedRide }) => {
-  const { from, to, doj, price, no_of_pass, status, publisher, email, phone } =
-    ride;
-  const { colorScheme, icon, text } = getStatusBadge(status);
+  const { from, to, doj, price, status } = ride;
+  const { icon, text } = getStatusBadge(status);
+
+  const navigate = useNavigate();
+
+  // Icon for indicating whether the ride was requested or posted
+  const rideTypeIcon = isRequestedRide ? (
+    <ArrowForwardIcon color="red.600" />
+  ) : (
+    <ArrowBackIcon color="green.600" />
+  );
+
+  // Darker theme colors based on ride type
+  const rideBackgroundColor = useColorModeValue(
+    isRequestedRide ? 'red.100' : 'green.100', // Slightly darker background for requested and posted rides
+    isRequestedRide ? 'red.600' : 'green.600' // Darker background for requested and posted rides
+  );
 
   return (
     <FadeInUp>
@@ -50,7 +71,7 @@ const FinishedRideCard = ({ ride, isRequestedRide }) => {
         py="2rem"
         my="1.5rem"
         px="2rem"
-        bg={'white'}
+        bg={useColorModeValue('white', 'gray.800')}
         position="relative"
         mx={['1rem', '1.5rem', '2rem', '3rem']}
         width="100%"
@@ -58,7 +79,22 @@ const FinishedRideCard = ({ ride, isRequestedRide }) => {
         borderRadius="12px"
         boxShadow="0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1)"
       >
-        <SimpleGrid columns={[1, 2, 3, 4]} spacing="20px">
+        <SimpleGrid columns={4} spacing="20px" alignItems="center">
+          <Box
+            w="100%"
+            textAlign="center"
+            display="flex"
+            alignItems="center"
+            bg={rideBackgroundColor}
+            borderRadius="12px"
+            py="2"
+            px="4"
+          >
+            {rideTypeIcon}
+            <Text fontWeight={600} fontSize="lg" ml={3}>
+              {isRequestedRide ? 'Requested' : 'Posted'}
+            </Text>
+          </Box>
           <Box
             w="100%"
             bgColor={'orange.200'}
@@ -91,46 +127,15 @@ const FinishedRideCard = ({ ride, isRequestedRide }) => {
             <Text fontWeight={'medium'}>Price</Text>
             <Text fontSize={'md'}>Rs. {price}</Text>
           </Box>
-          {!isRequestedRide && (
-            <Box w="100%" textAlign={'center'}>
-              <Text fontWeight={'medium'}>Seats Available</Text>
-              <Text fontSize={'md'}>{no_of_pass}</Text>
-            </Box>
-          )}
           <Box w="100%" textAlign={'center'}>
-            <Text fontWeight={'medium'}>Ride by</Text>
-            <Text fontSize={'md'}>
-              {publisher ? `${publisher.fname} ${publisher.lname}` : 'Unknown'}
-            </Text>
+            <Button
+              colorScheme="teal"
+              variant="outline"
+              onClick={() => navigate(`/ride/details/${ride._id}`)}
+            >
+              View Details
+            </Button>
           </Box>
-          {isRequestedRide && (
-            <Box w="100%" textAlign={'center'}>
-              <Text fontWeight={'medium'}>Status</Text>
-              <Badge colorScheme={colorScheme} variant="solid" px={4} py={2}>
-                {icon} {text}
-              </Badge>
-            </Box>
-          )}
-          {status === 'approved' && (
-            <Box w="100%" textAlign={'center'}>
-              <IconButton
-                icon={<EmailIcon />}
-                colorScheme="blue"
-                variant="outline"
-                aria-label="Email Publisher"
-                onClick={() => (window.location.href = `mailto:${email}`)}
-                m="2"
-              />
-              <IconButton
-                icon={<PhoneIcon />}
-                colorScheme="green"
-                variant="outline"
-                aria-label="Call Publisher"
-                onClick={() => (window.location.href = `tel:${phone}`)}
-                m="2"
-              />
-            </Box>
-          )}
         </SimpleGrid>
       </Card>
     </FadeInUp>
