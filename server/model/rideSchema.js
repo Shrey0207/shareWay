@@ -20,6 +20,14 @@ const rideSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  arrivalTime: {
+    type: String, // Store time as string in HH:mm format
+    required: true,
+  },
+  departureTime: {
+    type: String, // Store time as string in HH:mm format
+    required: true,
+  },
   price: {
     type: Number,
     required: true,

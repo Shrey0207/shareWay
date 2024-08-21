@@ -70,7 +70,15 @@ router.post("/user/login", async (req, res) => {
 
 router.post("/users/:UID/rides", async (req, res) => {
   const { UID } = req.params;
-  const { from, to, no_of_pass, doj, price } = req.body;
+  const { from, to, no_of_pass, doj, arrivalTime, departureTime, price } =
+    req.body;
+
+  // Ensure that the ride is not in the past
+  const currentDate = moment().format("YYYY-MM-DD");
+  if (moment(doj).isBefore(currentDate)) {
+    return res.status(400).json({ message: "Cannot post a ride in the past." });
+  }
+
   try {
     const user = await User.findOne({ UID: UID });
     if (!user) {
@@ -83,17 +91,19 @@ router.post("/users/:UID/rides", async (req, res) => {
       to,
       no_of_pass,
       doj,
+      arrivalTime,
+      departureTime,
       price,
     });
+
     await ride.save();
-    // Add the ride to the user's postedRides array
     user.postedRides.push(ride._id);
     await user.save();
-    console.log(ride);
 
-    res.send("RIDE PUBLISHED successfully");
+    res.send("Ride published successfully");
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
