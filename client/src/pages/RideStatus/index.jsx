@@ -20,6 +20,7 @@ import {
   FaCalendarAlt,
   FaMoneyBillWave,
   FaUser,
+  FaClock,
 } from 'react-icons/fa';
 import Navbar from '../../components/User/Navbar';
 import axios from 'axios';
@@ -212,6 +213,36 @@ const RideStatus = () => {
                       <Text fontWeight={'medium'}>Price</Text>
                       <Text fontSize={'lg'} fontWeight={'bold'}>
                         Rs. {rideDetails.price}
+                      </Text>
+                    </Box>
+                  </Flex>
+                  <Flex align="center">
+                    <Icon
+                      as={FaClock}
+                      w={6}
+                      h={6}
+                      color="purple.400"
+                      transition="color 0.3s ease"
+                    />
+                    <Box ml="3">
+                      <Text fontWeight={'medium'}>Departure Time</Text>
+                      <Text fontSize={'lg'} fontWeight={'bold'}>
+                        {rideDetails.departureTime}
+                      </Text>
+                    </Box>
+                  </Flex>
+                  <Flex align="center">
+                    <Icon
+                      as={FaClock}
+                      w={6}
+                      h={6}
+                      color="purple.400"
+                      transition="color 0.3s ease"
+                    />
+                    <Box ml="3">
+                      <Text fontWeight={'medium'}>Arrival Time</Text>
+                      <Text fontSize={'lg'} fontWeight={'bold'}>
+                        {rideDetails.arrivalTime}
                       </Text>
                     </Box>
                   </Flex>
