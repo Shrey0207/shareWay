@@ -53,6 +53,8 @@ const RequestCard = ({
   status, // Status prop
   email, // Publisher's email
   phone, // Publisher's phone
+  arrivalTime, // Arrival time prop
+  departureTime, // Departure time prop
 }) => {
   const [requestStatus, setRequestStatus] = useState(status || 'Unknown');
 
@@ -136,6 +138,14 @@ const RequestCard = ({
             <Badge colorScheme={colorScheme} variant="solid" px={4} py={2}>
               {icon} {text}
             </Badge>
+          </Box>
+          <Box w="100%" textAlign={'center'}>
+            <Text fontWeight={'medium'}>Arrival Time</Text>
+            <Text fontSize={'md'}>{arrivalTime || 'Not specified'}</Text>
+          </Box>
+          <Box w="100%" textAlign={'center'}>
+            <Text fontWeight={'medium'}>Departure Time</Text>
+            <Text fontSize={'md'}>{departureTime || 'Not specified'}</Text>
           </Box>
           {requestStatus === 'approved' && (
             <Box w="100%" textAlign={'center'}>

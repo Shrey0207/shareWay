@@ -301,6 +301,8 @@ router.get("/users/:uid/requeststatus", async (req, res) => {
         doj: ride.doj,
         seatsAvailable: ride.no_of_pass,
         price: ride.price,
+        arrivalTime: ride.arrivalTime, // Include arrival time
+        departureTime: ride.departureTime, // Include departure time
         requestStatus: rideRequest.status,
         publisherName: `${publisher.fname} ${publisher.lname}`,
         publisherEmail: publisher.email, // Add email

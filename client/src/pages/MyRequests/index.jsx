@@ -32,7 +32,6 @@ const MyRequestRides = () => {
   return (
     <ChakraProvider theme={theme}>
       <Navbar />
-
       <Box align={'center'}>
         <Text fontWeight={'bold'} fontSize="38px" my="4rem" mx="5rem">
           My Requests Status
@@ -52,6 +51,8 @@ const MyRequestRides = () => {
               publisher={{ fname: res.publisherName, lname: '' }}
               email={res.publisherEmail} // Add publisher's email
               phone={res.publisherPhone} // Add publisher's phone number
+              arrivalTime={res.arrivalTime} // Add arrival time
+              departureTime={res.departureTime} // Add departure time
             />
           ))
         ) : (
