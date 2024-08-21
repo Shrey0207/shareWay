@@ -158,6 +158,8 @@ const RidesSearch = () => {
                 fname: res.publisher_fname,
                 lname: res.publisher_lname,
               }}
+              arrivalTime={res.arrivalTime} // Pass arrival time
+              departureTime={res.departureTime} // Pass departure time
             />
           ))}
       </Box>

@@ -16,6 +16,8 @@ const RideCard = ({
   pid,
   uid,
   publisher,
+  arrivalTime, // New arrival time prop
+  departureTime, // New departure time prop
 }) => {
   const [msg, setMsg] = useState('Request Ride');
   const toast = useToast();
@@ -129,6 +131,14 @@ const RideCard = ({
             <Text fontSize={'md'}>
               {publisher ? `${publisher.fname} ${publisher.lname}` : 'Unknown'}
             </Text>
+          </Box>
+          <Box w="100%" textAlign={'center'}>
+            <Text fontWeight={'medium'}>Arrival Time</Text>
+            <Text fontSize={'md'}>{arrivalTime}</Text> {/* Arrival time */}
+          </Box>
+          <Box w="100%" textAlign={'center'}>
+            <Text fontWeight={'medium'}>Departure Time</Text>
+            <Text fontSize={'md'}>{departureTime}</Text> {/* Departure time */}
           </Box>
           <Box w="100%" textAlign={'center'}>
             <Button onClick={requestRide} colorScheme="teal" size="sm">
