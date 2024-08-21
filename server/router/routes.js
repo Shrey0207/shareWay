@@ -415,6 +415,8 @@ router.put("/rides/:rideId/request/:requestId", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+//completed rides returning route
 router.get("/user/:uid/completedrides", async (req, res) => {
   const { uid } = req.params;
   const currentDate = moment().format("YYYY-MM-DD");
@@ -430,9 +432,12 @@ router.get("/user/:uid/completedrides", async (req, res) => {
     }
 
     // Get old posted rides
-    const oldPostedRides = user.postedRides.filter((ride) =>
-      moment(ride.doj).isBefore(currentDate)
-    );
+    const oldPostedRides = user.postedRides
+      .filter((ride) => moment(ride.doj).isBefore(currentDate))
+      .map((ride) => ({
+        ...ride.toObject(),
+        isRequestedRide: false, // Add a flag to differentiate
+      }));
 
     // Get old requested rides
     let oldRequestedRides = [];
@@ -442,14 +447,17 @@ router.get("/user/:uid/completedrides", async (req, res) => {
         oldRequestedRides.push({
           ...ride.toObject(),
           status: request.status,
+          isRequestedRide: true, // Add a flag to differentiate
         });
       }
     }
 
-    res.json({
-      oldPostedRides,
-      oldRequestedRides,
-    });
+    // Merge and sort both arrays by date in descending order
+    const allRides = [...oldPostedRides, ...oldRequestedRides].sort((a, b) =>
+      moment(b.doj).diff(moment(a.doj))
+    );
+
+    res.json({ allRides });
   } catch (error) {
     console.error("Error fetching completed rides:", error);
     res.status(500).json({ message: "Server error" });

@@ -12,10 +12,7 @@ import FinishedRideCard from './finishedridecard';
 import Navbar from '../../components/User/Navbar';
 
 const FinishedRides = () => {
-  const [rides, setRides] = useState({
-    oldPostedRides: [],
-    oldRequestedRides: [],
-  });
+  const [rides, setRides] = useState([]); // Initialize as an empty array
   const toast = useToast();
 
   useEffect(() => {
@@ -25,7 +22,7 @@ const FinishedRides = () => {
         const { data } = await axios.get(
           `http://localhost:8000/user/${uid}/completedrides`
         );
-        setRides(data);
+        setRides(data.allRides || []); // Handle the combined rides array
       } catch (error) {
         toast({
           title: 'Error fetching rides',
@@ -59,20 +56,17 @@ const FinishedRides = () => {
           maxW="800px" // Set a max-width to ensure it doesn't stretch too wide on large screens
           width="100%"
         >
-          {rides.oldPostedRides.map(ride => (
-            <FinishedRideCard
-              key={ride._id}
-              ride={ride}
-              isRequestedRide={false}
-            />
-          ))}
-          {rides.oldRequestedRides.map(ride => (
-            <FinishedRideCard
-              key={ride._id}
-              ride={ride}
-              isRequestedRide={true}
-            />
-          ))}
+          {rides.length > 0 ? (
+            rides.map(ride => (
+              <FinishedRideCard
+                key={ride._id}
+                ride={ride}
+                isRequestedRide={ride.isRequestedRide} // Use the flag from backend
+              />
+            ))
+          ) : (
+            <Box>No completed rides found.</Box> // Display message if no rides
+          )}
         </Stack>
       </Box>
     </ChakraProvider>
