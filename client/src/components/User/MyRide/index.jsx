@@ -1,10 +1,20 @@
 import React from 'react';
 import { Box, Button, Text, SimpleGrid } from '@chakra-ui/react';
+import { TimeIcon } from '@chakra-ui/icons';
 import Card from '../../layouts/Card';
 import FadeInUp from '../../Animation/FadeInUp';
 import { useNavigate } from 'react-router-dom';
 
-export const MyRide = ({ from, to, nop, price, rideID, doj }) => {
+export const MyRide = ({
+  from,
+  to,
+  nop,
+  price,
+  rideID,
+  doj,
+  arrivalTime,
+  departureTime,
+}) => {
   const navigate = useNavigate();
 
   const redirectReq = () => {
@@ -58,18 +68,37 @@ export const MyRide = ({ from, to, nop, price, rideID, doj }) => {
             </Text>
             <Text fontSize={['md', 'lg', 'xl']}>{doj}</Text>
           </Box>
+
+          <Box textAlign="center">
+            <TimeIcon boxSize={6} mr={2} />
+            <Text fontWeight="bold" fontSize={['md', 'lg', 'xl']}>
+              Arrival Time
+            </Text>
+            <Text fontSize={['md', 'lg', 'xl']}>{arrivalTime}</Text>
+          </Box>
+
+          <Box textAlign="center">
+            <TimeIcon boxSize={6} mr={2} />
+            <Text fontWeight="bold" fontSize={['md', 'lg', 'xl']}>
+              Departure Time
+            </Text>
+            <Text fontSize={['md', 'lg', 'xl']}>{departureTime}</Text>
+          </Box>
+
           <Box textAlign="center">
             <Text fontSize={['md', 'lg', 'xl']} fontWeight="bold">
               {nop}
             </Text>
             <Text fontSize={['sm', 'md', 'lg']}>Seats</Text>
           </Box>
+
           <Box textAlign="center">
             <Text fontSize={['md', 'lg', 'xl']} fontWeight="bold">
               Price
             </Text>
             <Text fontSize={['md', 'lg', 'xl']}>Rs. {price}</Text>
           </Box>
+
           <Box textAlign="center">
             <Button
               onClick={redirectReq}

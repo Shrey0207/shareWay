@@ -52,6 +52,8 @@ const MyRides = () => {
               price={res.price}
               rideID={res._id}
               nop={res.no_of_pass}
+              arrivalTime={res.arrivalTime} // Pass the arrival time
+              departureTime={res.departureTime} // Pass the departure time
             />
           );
         })}
