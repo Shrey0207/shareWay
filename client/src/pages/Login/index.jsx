@@ -17,7 +17,7 @@ import {
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import FadeInUp from '../../components/Animation/FadeInUp';
+import FadeInUp from '../../components/Animation/fadeinup';
 import jwt from 'jwt-decode';
 
 export default function Login() {

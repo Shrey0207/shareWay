@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Button, Text, SimpleGrid } from '@chakra-ui/react';
 import { TimeIcon } from '@chakra-ui/icons';
 import Card from '../../layouts/Card';
-import FadeInUp from '../../Animation/FadeInUp';
+import FadeInUp from '../../Animation/fadeinup';
 import { useNavigate } from 'react-router-dom';
 
 export const MyRide = ({

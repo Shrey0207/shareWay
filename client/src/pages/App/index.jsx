@@ -10,7 +10,7 @@ import {
   Heading,
   theme,
 } from '@chakra-ui/react';
-import FadeInUp from '../../components/Animation/FadeInUp';
+import FadeInUp from '../../components/Animation/fadeinup';
 import Footer from '../../components/layouts/Footer';
 function App() {
   return (

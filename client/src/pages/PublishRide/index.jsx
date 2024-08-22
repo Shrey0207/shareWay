@@ -20,7 +20,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Navbar from '../../components/User/Navbar';
-import FadeInUp from '../../components/Animation/FadeInUp';
+import FadeInUp from '../../components/Animation/fadeinup';
 import moment from 'moment';
 const apiUrl = process.env.REACT_APP_API_URL;
 

@@ -17,7 +17,7 @@ import { Select as ChakraSelect } from '@chakra-ui/react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import FadeInUp from '../../components/Animation/FadeInUp';
+import FadeInUp from '../../components/Animation/fadeinup';
 
 const API_URL = process.env.REACT_APP_API_URL;
 

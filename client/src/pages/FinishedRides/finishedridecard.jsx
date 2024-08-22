@@ -13,7 +13,7 @@ import {
   ArrowForwardIcon,
   ArrowBackIcon,
 } from '@chakra-ui/icons';
-import FadeInUp from '../../components/Animation/FadeInUp';
+import FadeInUp from '../../components/Animation/fadeinup';
 import Card from '../../components/layouts/Card';
 import { useNavigate } from 'react-router-dom';
 

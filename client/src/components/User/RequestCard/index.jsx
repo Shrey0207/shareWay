@@ -7,7 +7,7 @@ import {
   EmailIcon,
   PhoneIcon,
 } from '@chakra-ui/icons';
-import FadeInUp from '../../Animation/FadeInUp';
+import FadeInUp from '../../Animation/fadeinup';
 import Card from '../../layouts/Card';
 import axios from 'axios';
 

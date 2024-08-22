@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useToast, Box, Text, Button, SimpleGrid } from '@chakra-ui/react';
 import axios from 'axios';
-import FadeInUp from '../../Animation/FadeInUp';
+import FadeInUp from '../../Animation/fadeinup';
 import Card from '../../layouts/Card';
 
 const apiUrl = process.env.REACT_APP_API_URL;
