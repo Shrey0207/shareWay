@@ -18,7 +18,7 @@ router.get("/", (req, res) => {
 router.post("/user/register", async (req, res) => {
   const { UID, user_type, fname, lname, email, designation, phone, password } =
     req.body;
-  console.log(req.body);
+  // console.log(req.body);
   try {
     const existingUser = await User.findOne({ UID });
     if (existingUser) {
@@ -37,7 +37,7 @@ router.post("/user/register", async (req, res) => {
       password,
     });
     await user.save();
-    console.log(user);
+    // console.log(user);
     res.status(201).send("USER registered successfully");
   } catch (error) {
     console.log(error);
@@ -45,15 +45,15 @@ router.post("/user/register", async (req, res) => {
 });
 router.post("/user/login", async (req, res) => {
   const { UID, password } = req.body;
-  console.log("UID : " + UID);
+  // console.log("UID : " + UID);
   try {
     const user = await User.findOne({ UID });
     if (user) {
       const isMatch = await user.comparePassword(password);
       if (isMatch) {
-        console.log("Successful sign in");
+        // console.log("Successful sign in");
         const token = await user.generateAuthToken();
-        console.log("Token /routes/ -> " + token);
+        // console.log("Token /routes/ -> " + token);
         res.status(200).send({ user, token });
       } else {
         console.log("Wrong Password");
@@ -402,7 +402,7 @@ router.get("/users/:uid/requeststatus", async (req, res) => {
     }
 
     // Log detailed requests to the console
-    console.log("Detailed Requests:", detailedRequests);
+    // console.log("Detailed Requests:", detailedRequests);
 
     // Send the detailed requests as a response
     res.status(200).json(detailedRequests);
@@ -446,7 +446,7 @@ router.get("/rides/:rideId/requesters", async (req, res) => {
     const rideRequests = await RideRequest.find({ ride_id: rideId });
 
     // Log ride requests for debugging
-    console.log("Ride Requests:", rideRequests);
+    // console.log("Ride Requests:", rideRequests);
 
     // If no requests found, return an empty array
     if (rideRequests.length === 0) {

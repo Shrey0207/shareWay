@@ -60,8 +60,8 @@ export default function Signup() {
 
   const handleSubmit = async event => {
     event.preventDefault();
-    console.log(AID);
-    console.log(password);
+    // console.log(AID);
+    // console.log(password);
 
     try {
       let dat = await axios.post(`${API_URL}/user/register`, {
@@ -76,7 +76,7 @@ export default function Signup() {
       });
 
       if (dat.status === 201) {
-        console.log(dat);
+        // console.log(dat);
         setmsg('Successful Registration');
         setStat('Registered');
         setTimeout(() => {

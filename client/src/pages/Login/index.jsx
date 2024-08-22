@@ -49,10 +49,10 @@ export default function Login() {
         UID: UID,
         password,
       });
-      console.log('data : ' + dat.data);
-      console.log('----');
-      console.log(dat.data.user);
-      console.log('----');
+      // console.log('data : ' + dat.data);
+      // console.log('----');
+      // console.log(dat.data.user);
+      // console.log('----');
       setToken(dat.data.token);
       if (dat.status === 200) {
         setMsg('SUCCESSFUL SIGNIN!');
