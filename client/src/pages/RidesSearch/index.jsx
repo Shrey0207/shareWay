@@ -16,22 +16,29 @@ import {
   Heading,
   useColorModeValue,
   HStack,
+  Select,
 } from '@chakra-ui/react';
+import dayjs from 'dayjs';
+
 const apiUrl = process.env.REACT_APP_API_URL;
+
 const RidesSearch = () => {
   const [allRides, setAllRides] = useState([]);
-
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [doj, setDoj] = useState('');
-  const [price, setPrice] = useState('');
+  const [seats, setSeats] = useState(1);
   const [msg, setmsg] = useState('Please fill the following details');
   const [loading, setLoad] = useState(false);
+
+  // Set min date for date input to today's date
+  const today = dayjs().format('YYYY-MM-DD');
 
   const handleFromChange = e => setFrom(e.target.value);
   const handleToChange = e => setTo(e.target.value);
   const handleDojChange = e => setDoj(e.target.value);
-  const handlePriceChange = e => setPrice(e.target.value);
+  const handleSeatsChange = e => setSeats(e.target.value);
+
   const handleSubmit = async event => {
     event.preventDefault();
     try {
@@ -42,9 +49,9 @@ const RidesSearch = () => {
       if (from) params.from_location = from;
       if (to) params.to_location = to;
       if (doj) params.doj = doj;
-      if (price) params.price = price;
+      if (seats) params.seats = seats;
 
-      let dat = await axios.get(`${apiUrl}/rides/all`, { params });
+      let dat = await axios.get(`${apiUrl}/rides/search`, { params });
 
       console.log('API Response Data:', dat.data); // Log the API response data
 
@@ -60,6 +67,25 @@ const RidesSearch = () => {
       console.log(err);
       setLoad(false);
       setmsg('An error occurred while searching for rides.');
+    }
+  };
+
+  const handleShowAllRides = async () => {
+    try {
+      setLoad(true);
+      const dat = await axios.get(`${apiUrl}/rides/future`);
+      setAllRides(dat.data);
+      setLoad(false);
+
+      if (dat.status === 200 && dat.data.length > 0) {
+        setmsg('Scroll to view all upcoming rides');
+      } else {
+        setmsg('No upcoming rides found');
+      }
+    } catch (err) {
+      console.log(err);
+      setLoad(false);
+      setmsg('An error occurred while fetching all rides.');
     }
   };
 
@@ -106,18 +132,24 @@ const RidesSearch = () => {
                     placeholder={'Date of Journey'}
                     id="doj"
                     type="date"
+                    min={today} // Restrict to today's date or future dates
                     onChange={handleDojChange}
                   />
                 </HStack>
                 <br />
                 <HStack>
-                  <FormLabel>Price per head</FormLabel>
-                  <Input
-                    placeholder={'Price per head'}
-                    id="price"
-                    type="text"
-                    onChange={handlePriceChange}
-                  />
+                  <FormLabel>Seats</FormLabel>
+                  <Select
+                    id="seats"
+                    onChange={handleSeatsChange}
+                    defaultValue={1}
+                  >
+                    {[1, 2, 3, 4, 5].map(seat => (
+                      <option key={seat} value={seat}>
+                        {seat}
+                      </option>
+                    ))}
+                  </Select>
                 </HStack>
               </FormControl>
               <br />
@@ -132,6 +164,16 @@ const RidesSearch = () => {
                   type="submit"
                 >
                   Search Ride
+                </Button>
+                <Button
+                  bg={'gray.400'}
+                  color={'white'}
+                  _hover={{
+                    bg: 'gray.500',
+                  }}
+                  onClick={handleShowAllRides}
+                >
+                  Show All Rides
                 </Button>
               </Stack>
             </form>

@@ -168,16 +168,82 @@ router.get("/user/data/:UID", async (req, res) => {
   }
 });
 
-router.get("/rides/all", async (req, res) => {
-  try {
-    const query = {};
-    if (req.query.from_location) query.from_location = req.query.from_location;
-    if (req.query.to_location) query.to_location = req.query.to_location;
-    if (req.query.doj) query.doj = req.query.doj;
-    if (req.query.price) query.price = req.query.price;
+// router.get("/rides/all", async (req, res) => {
+//   try {
+//     const query = {};
+//     if (req.query.from_location) query.from_location = req.query.from_location;
+//     if (req.query.to_location) query.to_location = req.query.to_location;
+//     if (req.query.doj) query.doj = req.query.doj;
+//     if (req.query.price) query.price = req.query.price;
 
-    // Fetch rides
+//     // Fetch rides
+//     const rides = await Ride.find(query);
+
+//     // Fetch publisher details for each ride
+//     const ridesWithPublisherDetails = await Promise.all(
+//       rides.map(async (ride) => {
+//         const user = await User.findOne({ UID: ride.PublisherID });
+//         return {
+//           ...ride.toObject(),
+//           publisher_fname: user ? user.fname : "Unknown",
+//           publisher_lname: user ? user.lname : "Unknown",
+//         };
+//       })
+//     );
+
+//     res.status(200).json(ridesWithPublisherDetails);
+//   } catch (err) {
+//     console.log(err);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// });
+router.get("/rides/search", async (req, res) => {
+  try {
+    const { from_location, to_location, doj, seats = 1 } = req.query;
+
+    const query = {};
+
+    if (from_location) query.from = from_location;
+    if (to_location) query.to = to_location;
+
+    // Handle date filtering
+    if (doj) {
+      query.doj = doj;
+    } else {
+      // If date is not provided, show all future rides
+      const currentDate = new Date().toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
+      query.doj = { $gte: currentDate };
+    }
+
+    // Filter based on seat availability
+    query.no_of_pass = { $gte: parseInt(seats) };
+
+    // Fetch rides based on query
     const rides = await Ride.find(query);
+
+    // Fetch publisher details for each ride
+    const ridesWithPublisherDetails = await Promise.all(
+      rides.map(async (ride) => {
+        const user = await User.findOne({ UID: ride.PublisherID });
+        return {
+          ...ride.toObject(),
+          publisher_fname: user ? user.fname : "Unknown",
+          publisher_lname: user ? user.lname : "Unknown",
+        };
+      })
+    );
+
+    res.status(200).json(ridesWithPublisherDetails);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+router.get("/rides/future", async (req, res) => {
+  try {
+    const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+    const rides = await Ride.find({ doj: { $gte: today } });
 
     // Fetch publisher details for each ride
     const ridesWithPublisherDetails = await Promise.all(
