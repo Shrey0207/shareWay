@@ -7,13 +7,11 @@ import {
   Heading,
   Text,
   Spinner,
-  Stack,
   Alert,
   AlertIcon,
   SimpleGrid,
   Flex,
   Icon,
-  useBreakpointValue,
   ChakraProvider,
 } from '@chakra-ui/react';
 import Navbar from '../../components/User/Navbar';
