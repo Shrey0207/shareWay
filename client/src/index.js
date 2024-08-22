@@ -11,6 +11,7 @@ import Profile from './pages/Profile';
 import UserRides from './pages/UserRides';
 import RideStatus from './pages/RideStatus';
 import FinishedRides from './pages/FinishedRides';
+import FinshedRidesDetails from './pages/FinshedRidesDetails';
 
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
@@ -48,6 +49,12 @@ const routing = (
           path="/user/dashboard/ridestatus/:slug"
           component={RideStatus}
           element={<RideStatus />}
+        />
+
+        <Route
+          path="/ride/details/:slug"
+          Component={FinshedRidesDetails}
+          element={<FinshedRidesDetails />}
         />
 
         <Route path="/user/profile" component={Profile} element={<Profile />} />
