@@ -339,10 +339,10 @@ router.get("/users/:uid/requests", async (req, res) => {
     res.status(500).json({ message: `Server error: ${err.message}` });
   }
 });
-
 router.get("/users/:uid/requeststatus", async (req, res) => {
   try {
     const { uid } = req.params;
+    const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
 
     // Step 1: Find the user by UID
     const user = await User.findOne({ UID: uid }).populate("requestedRides");
@@ -365,6 +365,12 @@ router.get("/users/:uid/requeststatus", async (req, res) => {
       if (!ride) {
         console.log(`Ride not found for request ${rideRequest._id}`);
         continue;
+      }
+
+      // Filter by date of journey, only include today's or future rides
+      const rideDate = new Date(ride.doj).toISOString().split("T")[0];
+      if (rideDate < today) {
+        continue; // Skip rides in the past
       }
 
       // Get publisher details
@@ -405,6 +411,7 @@ router.get("/users/:uid/requeststatus", async (req, res) => {
     res.status(500).json({ message: `Server error: ${err.message}` });
   }
 });
+
 // Route to get ride details by slug (MongoDB ObjectId)
 router.get("/rides/:slug/requests", async (req, res) => {
   try {
