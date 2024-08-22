@@ -565,6 +565,39 @@ router.get("/user/:uid/completedrides", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+router.get("/ride/details/:rideId", async (req, res) => {
+  const { rideId } = req.params;
+  // console.log("Ride ID:", rideId); // Log the rideId received
+  try {
+    const ride = await Ride.findById(rideId);
+    if (!ride) {
+      console.log("Ride not found");
+      return res.status(404).json({ message: "Ride not found" });
+    }
 
-// Implementing maps
+    const pendingRequests = await RideRequest.find({
+      ride_id: rideId,
+      status: "pending",
+    });
+    const acceptedRequests = await RideRequest.find({
+      ride_id: rideId,
+      status: "approved",
+    });
+    const rejectedRequests = await RideRequest.find({
+      ride_id: rideId,
+      status: "rejected",
+    });
+
+    res.status(200).json({
+      ride,
+      pendingRequests,
+      acceptedRequests,
+      rejectedRequests,
+    });
+  } catch (error) {
+    console.error("Server error:", error); // Log the exact error
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 export default router;

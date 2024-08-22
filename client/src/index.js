@@ -52,7 +52,7 @@ const routing = (
         />
 
         <Route
-          path="/ride/details/:slug"
+          path="/ride/details/:rideId"
           Component={FinshedRidesDetails}
           element={<FinshedRidesDetails />}
         />
