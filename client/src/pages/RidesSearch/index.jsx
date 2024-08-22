@@ -16,8 +16,8 @@ import {
   Heading,
   useColorModeValue,
   HStack,
-  Select,
 } from '@chakra-ui/react';
+import { motion } from 'framer-motion'; // For animations
 import dayjs from 'dayjs';
 
 const apiUrl = process.env.REACT_APP_API_URL;
@@ -37,32 +37,30 @@ const RidesSearch = () => {
   const handleFromChange = e => setFrom(e.target.value);
   const handleToChange = e => setTo(e.target.value);
   const handleDojChange = e => setDoj(e.target.value);
-  const handleSeatsChange = e => setSeats(e.target.value);
+  const handleSeatsChange = value => {
+    if (value >= 1 && value <= 5) setSeats(value);
+  };
 
   const handleSubmit = async event => {
     event.preventDefault();
     try {
       setLoad(true);
 
-      // Create a params object only if the fields are filled
       const params = {};
       if (from) params.from_location = from;
       if (to) params.to_location = to;
       if (doj) params.doj = doj;
       if (seats) params.seats = seats;
 
-      let dat = await axios.get(`${apiUrl}/rides/search`, { params });
-
-      console.log('API Response Data:', dat.data); // Log the API response data
-
+      const dat = await axios.get(`${apiUrl}/rides/search`, { params });
       setAllRides(dat.data);
       setLoad(false);
 
-      if (dat.status === 200 && dat.data.length > 0) {
-        setmsg('Scroll to view rides');
-      } else {
-        setmsg("Couldn't find rides");
-      }
+      setmsg(
+        dat.status === 200 && dat.data.length > 0
+          ? 'Scroll to view rides'
+          : "Couldn't find rides"
+      );
     } catch (err) {
       console.log(err);
       setLoad(false);
@@ -76,12 +74,11 @@ const RidesSearch = () => {
       const dat = await axios.get(`${apiUrl}/rides/future`);
       setAllRides(dat.data);
       setLoad(false);
-
-      if (dat.status === 200 && dat.data.length > 0) {
-        setmsg('Scroll to view all upcoming rides');
-      } else {
-        setmsg('No upcoming rides found');
-      }
+      setmsg(
+        dat.status === 200 && dat.data.length > 0
+          ? 'Scroll to view all upcoming rides'
+          : 'No upcoming rides found'
+      );
     } catch (err) {
       console.log(err);
       setLoad(false);
@@ -92,7 +89,13 @@ const RidesSearch = () => {
   return (
     <ChakraProvider theme={theme}>
       <Navbar />
-      <Stack spacing={8} mx={'auto'} maxW={'lg'} py={2} px={6}>
+      <Stack
+        spacing={8}
+        mx={'auto'}
+        maxW={{ base: 'full', md: 'lg' }}
+        py={4}
+        px={4}
+      >
         <Stack align={'center'}>
           <Heading fontSize={'4xl'}> Search Rides</Heading>
           <Text fontSize={'lg'} color={'gray.600'}>
@@ -104,14 +107,17 @@ const RidesSearch = () => {
           bg={useColorModeValue('white', 'gray.700')}
           boxShadow={'lg'}
           p={8}
+          w={{ base: 'full', md: 'md' }}
+          transition="0.3s"
+          _hover={{ boxShadow: '2xl' }}
         >
           <Stack spacing={4}>
             <form onSubmit={handleSubmit}>
               <FormControl id="publish_ride">
-                <HStack>
+                <HStack spacing={4}>
                   <FormLabel>From</FormLabel>
                   <Input
-                    placeholder={'Enter a pick-up point'}
+                    placeholder={'Enter pick-up point'}
                     id="from"
                     type="text"
                     onChange={handleFromChange}
@@ -119,7 +125,7 @@ const RidesSearch = () => {
 
                   <FormLabel>To</FormLabel>
                   <Input
-                    placeholder={'Enter a drop point'}
+                    placeholder={'Enter drop point'}
                     id="to"
                     type="text"
                     onChange={handleToChange}
@@ -132,35 +138,45 @@ const RidesSearch = () => {
                     placeholder={'Date of Journey'}
                     id="doj"
                     type="date"
-                    min={today} // Restrict to today's date or future dates
+                    min={today}
                     onChange={handleDojChange}
                   />
                 </HStack>
                 <br />
                 <HStack>
                   <FormLabel>Seats</FormLabel>
-                  <Select
-                    id="seats"
-                    onChange={handleSeatsChange}
-                    defaultValue={1}
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => handleSeatsChange(seats - 1)}
+                    style={{
+                      padding: '10px',
+                      backgroundColor: theme.colors.blue[400],
+                      color: 'white',
+                      borderRadius: '5px',
+                    }}
                   >
-                    {[1, 2, 3, 4, 5].map(seat => (
-                      <option key={seat} value={seat}>
-                        {seat}
-                      </option>
-                    ))}
-                  </Select>
+                    -
+                  </motion.button>
+                  <Text fontSize={'lg'}>{seats}</Text>
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => handleSeatsChange(seats + 1)}
+                    style={{
+                      padding: '10px',
+                      backgroundColor: theme.colors.blue[400],
+                      color: 'white',
+                      borderRadius: '5px',
+                    }}
+                  >
+                    +
+                  </motion.button>
                 </HStack>
               </FormControl>
-              <br />
-              <Stack spacing={10}>
+              <Stack spacing={10} mt={6}>
                 <Button
                   bg={'blue.400'}
                   color={'white'}
-                  _hover={{
-                    bg: 'blue.500',
-                  }}
-                  my={'1rem'}
+                  _hover={{ bg: 'blue.500' }}
                   type="submit"
                 >
                   Search Ride
@@ -168,21 +184,18 @@ const RidesSearch = () => {
                 <Button
                   bg={'gray.400'}
                   color={'white'}
-                  _hover={{
-                    bg: 'gray.500',
-                  }}
+                  _hover={{ bg: 'gray.500' }}
                   onClick={handleShowAllRides}
                 >
                   Show All Rides
                 </Button>
               </Stack>
             </form>
-            <Stack spacing={10}></Stack>
           </Stack>
         </Box>
       </Stack>
       <Box align={'center'}>
-        {loading === true ? <LoadingCard /> : null}
+        {loading ? <LoadingCard /> : null}
         {allRides
           .filter(res => res.PublisherID !== localStorage.getItem('UID'))
           .map(res => (
@@ -200,13 +213,11 @@ const RidesSearch = () => {
                 fname: res.publisher_fname,
                 lname: res.publisher_lname,
               }}
-              arrivalTime={res.arrivalTime} // Pass arrival time
-              departureTime={res.departureTime} // Pass departure time
+              arrivalTime={res.arrivalTime}
+              departureTime={res.departureTime}
             />
           ))}
       </Box>
-      <br />
-      <br />
     </ChakraProvider>
   );
 };
