@@ -1,7 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Box, Card, Heading, Text, Spinner, Stack } from '@chakra-ui/react';
+import {
+  Box,
+  Card,
+  Heading,
+  Text,
+  Spinner,
+  Stack,
+  Alert,
+  AlertIcon,
+  SimpleGrid,
+  Flex,
+  Icon,
+  useBreakpointValue,
+  ChakraProvider,
+} from '@chakra-ui/react';
+import Navbar from '../../components/User/Navbar';
+import {
+  FaMapMarkerAlt,
+  FaCalendarAlt,
+  FaUsers,
+  FaMoneyBillWave,
+  FaClock,
+  FaUser,
+} from 'react-icons/fa';
 
 const FinishedRidesDetails = () => {
   const { rideId } = useParams();
@@ -10,19 +33,19 @@ const FinishedRidesDetails = () => {
   const [acceptedRequests, setAcceptedRequests] = useState([]);
   const [rejectedRequests, setRejectedRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchRideDetails = async () => {
       try {
         const response = await axios.get(`/ride/details/${rideId}`);
-        console.log('Ride details response:', response.data);
         setRideDetails(response.data.ride);
         setPendingRequests(response.data.pendingRequests);
         setAcceptedRequests(response.data.acceptedRequests);
         setRejectedRequests(response.data.rejectedRequests);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching ride details:', error);
+        setError('Failed to load ride details.');
         setLoading(false);
       }
     };
@@ -43,77 +66,251 @@ const FinishedRidesDetails = () => {
     );
   }
 
+  if (error) {
+    return (
+      <Box p={5}>
+        <Alert status="error">
+          <AlertIcon />
+          {error}
+        </Alert>
+      </Box>
+    );
+  }
+
   if (!rideDetails) {
-    return <Text>No ride details found.</Text>;
+    return (
+      <Box p={5}>
+        <Alert status="info">
+          <AlertIcon />
+          No ride details found.
+        </Alert>
+      </Box>
+    );
   }
 
   return (
-    <Box p={5}>
-      <Card p={5} shadow="md">
-        <Heading size="lg" mb={4}>
-          Ride Details
-        </Heading>
-        <Stack spacing={2}>
-          <Text>
-            <strong>From:</strong> {rideDetails.from}
-          </Text>
-          <Text>
-            <strong>To:</strong> {rideDetails.to}
-          </Text>
-          <Text>
-            <strong>Date of Journey:</strong> {rideDetails.doj}
-          </Text>
-          <Text>
-            <strong>Price:</strong> ₹{rideDetails.price}
-          </Text>
-          <Text>
-            <strong>Arrival Time:</strong> {rideDetails.arrivalTime}
-          </Text>
-          <Text>
-            <strong>Departure Time:</strong> {rideDetails.departureTime}
-          </Text>
-        </Stack>
-      </Card>
+    <ChakraProvider>
+      <Navbar />
+      <Box p={5}>
+        <Card
+          p={5}
+          shadow="lg"
+          borderWidth="1px"
+          borderRadius="lg"
+          bg="white"
+          mb={5}
+          maxW="container.md"
+          mx="auto"
+        >
+          <Heading size="lg" mb={4}>
+            Ride Details
+          </Heading>
+          <SimpleGrid columns={[1, 2]} spacing={5}>
+            <Flex align="center">
+              <Icon as={FaMapMarkerAlt} w={6} h={6} color="orange.400" />
+              <Box ml={3}>
+                <Text fontWeight="medium">From</Text>
+                <Text fontSize="lg" fontWeight="bold">
+                  {rideDetails.from}
+                </Text>
+              </Box>
+            </Flex>
+            <Flex align="center">
+              <Icon as={FaMapMarkerAlt} w={6} h={6} color="orange.400" />
+              <Box ml={3}>
+                <Text fontWeight="medium">To</Text>
+                <Text fontSize="lg" fontWeight="bold">
+                  {rideDetails.to}
+                </Text>
+              </Box>
+            </Flex>
+            <Flex align="center">
+              <Icon as={FaCalendarAlt} w={6} h={6} color="blue.400" />
+              <Box ml={3}>
+                <Text fontWeight="medium">Date of Journey</Text>
+                <Text fontSize="lg" fontWeight="bold">
+                  {new Date(rideDetails.doj).toLocaleDateString()}
+                </Text>
+              </Box>
+            </Flex>
+            <Flex align="center">
+              <Icon as={FaUsers} w={6} h={6} color="teal.400" />
+              <Box ml={3}>
+                <Text fontWeight="medium">Seats Available</Text>
+                <Text fontSize="lg" fontWeight="bold">
+                  {rideDetails.no_of_pass}
+                </Text>
+              </Box>
+            </Flex>
+            <Flex align="center">
+              <Icon as={FaMoneyBillWave} w={6} h={6} color="green.400" />
+              <Box ml={3}>
+                <Text fontWeight="medium">Price</Text>
+                <Text fontSize="lg" fontWeight="bold">
+                  ₹{rideDetails.price}
+                </Text>
+              </Box>
+            </Flex>
+            <Flex align="center">
+              <Icon as={FaClock} w={6} h={6} color="purple.400" />
+              <Box ml={3}>
+                <Text fontWeight="medium">Departure Time</Text>
+                <Text fontSize="lg" fontWeight="bold">
+                  {rideDetails.departureTime || 'Not specified'}
+                </Text>
+              </Box>
+            </Flex>
+            <Flex align="center">
+              <Icon as={FaClock} w={6} h={6} color="purple.400" />
+              <Box ml={3}>
+                <Text fontWeight="medium">Arrival Time</Text>
+                <Text fontSize="lg" fontWeight="bold">
+                  {rideDetails.arrivalTime || 'Not specified'}
+                </Text>
+              </Box>
+            </Flex>
+          </SimpleGrid>
+        </Card>
 
-      <Card mt={5} p={5} shadow="md">
-        <Heading size="md" mb={3}>
-          Pending Requests
-        </Heading>
-        {pendingRequests.length > 0 ? (
-          pendingRequests.map(request => (
-            <Text key={request._id}>{request.requestee_id}</Text>
-          ))
-        ) : (
-          <Text>No pending requests</Text>
-        )}
-      </Card>
+        <Card
+          p={5}
+          shadow="lg"
+          borderWidth="1px"
+          borderRadius="lg"
+          bg="white"
+          mb={5}
+          maxW="container.md"
+          mx="auto"
+        >
+          <Heading size="md" mb={4}>
+            Pending Requests
+          </Heading>
+          {pendingRequests.length > 0 ? (
+            pendingRequests.map(request => (
+              <Box
+                key={request._id}
+                p={4}
+                borderBottom="1px solid #e2e8f0"
+                mb={4}
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                borderRadius="md"
+                _hover={{ bg: 'gray.50', transform: 'scale(1.02)' }}
+                transition="background-color 0.3s, transform 0.3s"
+              >
+                <Flex align="center">
+                  <Icon as={FaUser} w={5} h={5} color="teal.400" />
+                  <Box ml={3}>
+                    <Text fontWeight="medium">Name</Text>
+                    <Text fontSize="lg" fontWeight="bold">
+                      {request.requestee_name}
+                    </Text>
+                    <Text fontSize="sm" color="gray.600">
+                      Registration No: {request.requestee_id}
+                    </Text>
+                  </Box>
+                </Flex>
+              </Box>
+            ))
+          ) : (
+            <Text>No pending requests</Text>
+          )}
+        </Card>
 
-      <Card mt={5} p={5} shadow="md">
-        <Heading size="md" mb={3}>
-          Accepted Requests
-        </Heading>
-        {acceptedRequests.length > 0 ? (
-          acceptedRequests.map(request => (
-            <Text key={request._id}>{request.requestee_id}</Text>
-          ))
-        ) : (
-          <Text>No accepted requests</Text>
-        )}
-      </Card>
+        <Card
+          p={5}
+          shadow="lg"
+          borderWidth="1px"
+          borderRadius="lg"
+          bg="white"
+          mb={5}
+          maxW="container.md"
+          mx="auto"
+        >
+          <Heading size="md" mb={4}>
+            Accepted Requests
+          </Heading>
+          {acceptedRequests.length > 0 ? (
+            acceptedRequests.map(request => (
+              <Box
+                key={request._id}
+                p={4}
+                borderBottom="1px solid #e2e8f0"
+                mb={4}
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                borderRadius="md"
+                _hover={{ bg: 'gray.50', transform: 'scale(1.02)' }}
+                transition="background-color 0.3s, transform 0.3s"
+              >
+                <Flex align="center">
+                  <Icon as={FaUser} w={5} h={5} color="green.400" />
+                  <Box ml={3}>
+                    <Text fontWeight="medium">Name</Text>
+                    <Text fontSize="lg" fontWeight="bold">
+                      {request.requestee_name}
+                    </Text>
+                    <Text fontSize="sm" color="gray.600">
+                      Registration No: {request.requestee_id}
+                    </Text>
+                  </Box>
+                </Flex>
+              </Box>
+            ))
+          ) : (
+            <Text>No accepted requests</Text>
+          )}
+        </Card>
 
-      <Card mt={5} p={5} shadow="md">
-        <Heading size="md" mb={3}>
-          Rejected Requests
-        </Heading>
-        {rejectedRequests.length > 0 ? (
-          rejectedRequests.map(request => (
-            <Text key={request._id}>{request.requestee_id}</Text>
-          ))
-        ) : (
-          <Text>No rejected requests</Text>
-        )}
-      </Card>
-    </Box>
+        <Card
+          p={5}
+          shadow="lg"
+          borderWidth="1px"
+          borderRadius="lg"
+          bg="white"
+          mb={5}
+          maxW="container.md"
+          mx="auto"
+        >
+          <Heading size="md" mb={4}>
+            Rejected Requests
+          </Heading>
+          {rejectedRequests.length > 0 ? (
+            rejectedRequests.map(request => (
+              <Box
+                key={request._id}
+                p={4}
+                borderBottom="1px solid #e2e8f0"
+                mb={4}
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                borderRadius="md"
+                _hover={{ bg: 'gray.50', transform: 'scale(1.02)' }}
+                transition="background-color 0.3s, transform 0.3s"
+              >
+                <Flex align="center">
+                  <Icon as={FaUser} w={5} h={5} color="red.400" />
+                  <Box ml={3}>
+                    <Text fontWeight="medium">Name</Text>
+                    <Text fontSize="lg" fontWeight="bold">
+                      {request.requestee_name}
+                    </Text>
+                    <Text fontSize="sm" color="gray.600">
+                      Registration No: {request.requestee_id}
+                    </Text>
+                  </Box>
+                </Flex>
+              </Box>
+            ))
+          ) : (
+            <Text>No rejected requests</Text>
+          )}
+        </Card>
+      </Box>
+    </ChakraProvider>
   );
 };
 

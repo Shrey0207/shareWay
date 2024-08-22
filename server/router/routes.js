@@ -567,7 +567,6 @@ router.get("/user/:uid/completedrides", async (req, res) => {
 });
 router.get("/ride/details/:rideId", async (req, res) => {
   const { rideId } = req.params;
-  // console.log("Ride ID:", rideId); // Log the rideId received
   try {
     const ride = await Ride.findById(rideId);
     if (!ride) {
@@ -579,20 +578,58 @@ router.get("/ride/details/:rideId", async (req, res) => {
       ride_id: rideId,
       status: "pending",
     });
+
     const acceptedRequests = await RideRequest.find({
       ride_id: rideId,
       status: "approved",
     });
+
     const rejectedRequests = await RideRequest.find({
       ride_id: rideId,
       status: "rejected",
     });
 
+    // Fetch user details for pending requests
+    const pendingRequestUsers = await Promise.all(
+      pendingRequests.map(async (request) => {
+        const user = await User.findOne({ UID: request.requestee_id });
+        return {
+          ...request.toObject(),
+          requestee_name: `${user.fname} ${user.lname}`,
+          requestee_id: user.UID,
+        };
+      })
+    );
+
+    // Fetch user details for accepted requests
+    const acceptedRequestUsers = await Promise.all(
+      acceptedRequests.map(async (request) => {
+        const user = await User.findOne({ UID: request.requestee_id });
+        return {
+          ...request.toObject(),
+          requestee_name: `${user.fname} ${user.lname}`,
+          requestee_id: user.UID,
+        };
+      })
+    );
+
+    // Fetch user details for rejected requests
+    const rejectedRequestUsers = await Promise.all(
+      rejectedRequests.map(async (request) => {
+        const user = await User.findOne({ UID: request.requestee_id });
+        return {
+          ...request.toObject(),
+          requestee_name: `${user.fname} ${user.lname}`,
+          requestee_id: user.UID,
+        };
+      })
+    );
+
     res.status(200).json({
       ride,
-      pendingRequests,
-      acceptedRequests,
-      rejectedRequests,
+      pendingRequests: pendingRequestUsers,
+      acceptedRequests: acceptedRequestUsers,
+      rejectedRequests: rejectedRequestUsers,
     });
   } catch (error) {
     console.error("Server error:", error); // Log the exact error
