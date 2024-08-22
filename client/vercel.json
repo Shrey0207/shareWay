@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "shareway/client/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "shareway/client/build"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/shareway/client/$1"
+    }
+  ]
+}
