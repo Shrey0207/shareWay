@@ -109,14 +109,31 @@ router.post("/users/:UID/rides", async (req, res) => {
 
 router.get("/user/:UID/rides", authenticate, async (req, res) => {
   const { UID } = req.params;
+
   try {
-    const userRides = await Ride.find({ PublisherID: UID });
-    res.status(200).json(userRides);
+    // Get the current date without the time part
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    // Find all rides posted by the user
+    const userRides = await Ride.find({
+      PublisherID: UID,
+    });
+
+    // Filter the rides where the date of journey is today or in the future
+    const filteredRides = userRides.filter((ride) => {
+      const rideDate = new Date(ride.doj); // Convert the doj string to a Date object
+      rideDate.setHours(0, 0, 0, 0); // Ignore time part for comparison
+      return rideDate >= currentDate; // Compare with the current date
+    });
+
+    res.status(200).json(filteredRides);
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "Failed to fetch rides" });
   }
 });
+
 router.get("/user/dashboard", authenticate, function (req, res) {
   try {
     console.log("Hello from GET /user/dashboard");
