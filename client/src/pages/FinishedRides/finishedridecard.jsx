@@ -48,7 +48,7 @@ const getStatusBadge = status => {
 };
 
 const FinishedRideCard = ({ ride, isRequestedRide }) => {
-  const { from, to, doj, price, status } = ride;
+  const { from, to, doj, price, status, publisherName } = ride;
   const { icon, text, colorScheme } = getStatusBadge(status);
 
   const navigate = useNavigate();
@@ -62,8 +62,8 @@ const FinishedRideCard = ({ ride, isRequestedRide }) => {
 
   // Darker theme colors based on ride type
   const rideBackgroundColor = useColorModeValue(
-    isRequestedRide ? 'red.100' : 'green.100', // Slightly darker background for requested and posted rides
-    isRequestedRide ? 'red.600' : 'green.600' // Darker background for requested and posted rides
+    isRequestedRide ? 'red.100' : 'green.100',
+    isRequestedRide ? 'red.600' : 'green.600'
   );
 
   return (
@@ -128,6 +128,13 @@ const FinishedRideCard = ({ ride, isRequestedRide }) => {
             <Text fontWeight={'medium'}>Price</Text>
             <Text fontSize={'md'}>Rs. {price}</Text>
           </Box>
+          {/* Conditionally render the publisher field only for requested rides */}
+          {isRequestedRide && (
+            <Box w="100%" textAlign={'center'}>
+              <Text fontWeight={'medium'}>Publisher</Text>
+              <Text fontSize={'md'}>{publisherName}</Text>
+            </Box>
+          )}
           {/* Conditionally render the status badge only for requested rides */}
           {isRequestedRide && (
             <Box w="100%" textAlign={'center'}>

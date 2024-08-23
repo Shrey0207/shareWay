@@ -541,14 +541,16 @@ router.get("/user/:uid/completedrides", async (req, res) => {
         isRequestedRide: false, // Add a flag to differentiate
       }));
 
-    // Get old requested rides
+    // Get old requested rides and publisher info
     let oldRequestedRides = [];
     for (let request of user.requestedRides) {
       const ride = await Ride.findById(request.ride_id);
       if (ride && moment(ride.doj).isBefore(currentDate)) {
+        const publisher = await User.findOne({ UID: ride.PublisherID });
         oldRequestedRides.push({
           ...ride.toObject(),
           status: request.status,
+          publisherName: `${publisher.fname} ${publisher.lname}`, // Add publisher's name
           isRequestedRide: true, // Add a flag to differentiate
         });
       }
@@ -565,6 +567,7 @@ router.get("/user/:uid/completedrides", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
 router.get("/ride/details/:rideId", async (req, res) => {
   const { rideId } = req.params;
   try {
