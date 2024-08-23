@@ -10,7 +10,7 @@ import {
 import axios from 'axios';
 import FinishedRideCard from './finishedridecard';
 import Navbar from '../../components/User/Navbar';
-
+const apiUrl = process.env.REACT_APP_API_URL;
 const FinishedRides = () => {
   const [rides, setRides] = useState([]); // Initialize as an empty array
   const toast = useToast();
@@ -20,7 +20,7 @@ const FinishedRides = () => {
       try {
         const uid = localStorage.getItem('UID');
         const { data } = await axios.get(
-          `http://localhost:8000/user/${uid}/completedrides`
+          `${apiUrl}/user/${uid}/completedrides`
         );
         setRides(data.allRides || []); // Handle the combined rides array
       } catch (error) {
