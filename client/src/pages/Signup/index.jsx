@@ -24,7 +24,7 @@ const API_URL = process.env.REACT_APP_API_URL;
 export default function Signup() {
   const navigate = useNavigate();
   const toast = useToast();
-  const [token, setToken] = useState('');
+  const [token] = useState('');
 
   useEffect(() => {
     localStorage.setItem('tokenID', token);

@@ -5,6 +5,7 @@ import {
   SimpleGrid,
   Button,
   useColorModeValue,
+  Badge,
 } from '@chakra-ui/react';
 import {
   CheckCircleIcon,
@@ -48,7 +49,7 @@ const getStatusBadge = status => {
 
 const FinishedRideCard = ({ ride, isRequestedRide }) => {
   const { from, to, doj, price, status } = ride;
-  const { icon, text } = getStatusBadge(status);
+  const { icon, text, colorScheme } = getStatusBadge(status);
 
   const navigate = useNavigate();
 
@@ -127,6 +128,14 @@ const FinishedRideCard = ({ ride, isRequestedRide }) => {
             <Text fontWeight={'medium'}>Price</Text>
             <Text fontSize={'md'}>Rs. {price}</Text>
           </Box>
+          {/* Conditionally render the status badge only for requested rides */}
+          {isRequestedRide && (
+            <Box w="100%" textAlign={'center'}>
+              <Badge colorScheme={colorScheme} fontSize="lg">
+                {icon} {text}
+              </Badge>
+            </Box>
+          )}
           <Box w="100%" textAlign={'center'}>
             <Button
               colorScheme="teal"
