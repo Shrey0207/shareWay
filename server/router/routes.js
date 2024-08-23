@@ -284,7 +284,7 @@ router.post("/users/:uid/requests", async (req, res) => {
     if (!ride) {
       return res.status(404).json({ message: "Ride not found" });
     }
-    if (ride.seatsAvailable <= 0) {
+    if (ride.no_of_pass <= 0) {
       return res.status(400).json({ message: "Seats not available" });
     }
 
