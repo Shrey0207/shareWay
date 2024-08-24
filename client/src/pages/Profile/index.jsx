@@ -16,7 +16,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import axios from 'axios';
-
+const apiUrl = process.env.REACT_APP_API_URL;
 const Profile = () => {
   const [user, setUser] = useState(null);
   const toast = useToast();
@@ -35,7 +35,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get('/user/dashboard', {
+        const response = await axios.get(`${apiUrl}/user/dashboard`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('tokenID')}`,
           },
