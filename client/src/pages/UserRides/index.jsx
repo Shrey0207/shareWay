@@ -2,6 +2,7 @@ import React from 'react';
 import MyRides from '../MyRides';
 import jwt_decode from 'jwt-decode';
 import { useState, useEffect } from 'react';
+const apiUrl = process.env.REACT_APP_API_URL;
 const UserRides = () => {
   const [S_UID, setUID] = useState('');
 
@@ -11,7 +12,7 @@ const UserRides = () => {
     setUID(user.UID);
 
     try {
-      fetch('/user/dashboard/', {
+      fetch(`${apiUrl}/user/dashboard/`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${x}`,

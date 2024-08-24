@@ -22,7 +22,7 @@ import {
 import { HamburgerIcon, CloseIcon, AddIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+const apiUrl = process.env.REACT_APP_API_URL;
 export default function Navbar() {
   const [name, setName] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -34,7 +34,7 @@ export default function Navbar() {
       try {
         const token = localStorage.getItem('tokenID');
         if (token) {
-          const response = await axios.get('/user/dashboard', {
+          const response = await axios.get(`${apiUrl}/user/dashboard`, {
             headers: { Authorization: `Bearer ${token}` },
           });
 
